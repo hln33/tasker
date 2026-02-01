@@ -1,12 +1,5 @@
 import type { PageLoad } from './$types';
-
-type Task = {
-	id: string;
-	title: string;
-	description: string;
-	status: string;
-	priority: string;
-};
+import type { Task } from '$lib/types';
 
 export const load: PageLoad = async ({ fetch }) => {
 	const response = await fetch('http://localhost:8080/api/task');

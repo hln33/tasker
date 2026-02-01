@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { invalidate } from '$app/navigation';
+	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
 
 	let { data }: { data: PageData } = $props();
+
+	let showAddTaskModal = $state(false);
+	let successMessage = $state('');
 
 	const getPriorityColor = (priority: string) => {
 		switch (priority.toLowerCase()) {
@@ -29,14 +34,45 @@
 		}
 	};
 
-  $effect(() => {
-    console.log('Data updated:', data);
-  });
+	$effect(() => {
+		console.log('Data updated:', data);
+	});
+
+	function openAddTaskModal() {
+		showAddTaskModal = true;
+		successMessage = '';
+	}
+
+	function closeAddTaskModal() {
+		showAddTaskModal = false;
+	}
+
+	async function handleTaskCreated() {
+		await invalidate('http://localhost:8080/api/task');
+		successMessage = 'Task created successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+	}
 </script>
 
 <div class="min-h-screen bg-gray-200 py-12 px-4">
 	<div class="max-w-2xl mx-auto">
-		<h1 class="text-3xl font-bold text-gray-900 mb-8">Tasker</h1>
+		<div class="flex justify-between items-center mb-8">
+			<h1 class="text-3xl font-bold text-gray-900">Tasker</h1>
+			<button
+				onclick={openAddTaskModal}
+				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+			>
+				Add Task
+			</button>
+		</div>
+
+		{#if successMessage}
+			<div class="mb-4 bg-green-50 border border-green-200 rounded-lg p-4">
+				<p class="text-green-800">{successMessage}</p>
+			</div>
+		{/if}
 
     {#await data.tasks}
       <div class="bg-white rounded-lg shadow p-6">
@@ -85,5 +121,13 @@
         </p>
       </div>
     {/await}
+
+    <AddTaskModal
+      open={showAddTaskModal}
+      onClose={() => {
+        closeAddTaskModal();
+        handleTaskCreated();
+      }}
+    />
 	</div>
 </div>

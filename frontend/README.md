@@ -29,6 +29,42 @@ npm run dev
 npm run dev -- --open
 ```
 
+## Testing
+
+The project uses Vitest with Playwright for browser-based testing.
+
+### Run all tests
+
+```sh
+npm test
+```
+
+### Run tests in watch mode
+
+```sh
+npm run test:unit
+```
+
+### Run a specific test file
+
+```sh
+npm run test:unit -- path/to/file.spec.ts
+```
+
+### Testing setup
+
+- **Test runner**: Vitest v4.0.18
+- **Browser automation**: Playwright with Chromium (headless)
+- **Svelte testing**: `vitest-browser-svelte` for component rendering
+- **Test location**: Co-located with source files
+
+### Test pattern
+
+- Test files follow pattern: `{filename}.svelte.spec.ts`
+- Located alongside the component being tested
+- Uses `render()` from `vitest-browser-svelte`
+- Uses `page` from `vitest/browser` for querying DOM
+
 ## Building
 
 To create a production version of your app:
