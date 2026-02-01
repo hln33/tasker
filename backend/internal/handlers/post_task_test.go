@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	task "tasker/internal/Task"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -28,11 +29,10 @@ func TestPostTaskHandler_Success(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	taskBody := map[string]any{
-		"title":       "Test Task",
+		"title":       "Test task.Task",
 		"description": "Test Description",
 		"status":      "In Progress",
 		"priority":    "High",
@@ -47,12 +47,12 @@ func TestPostTaskHandler_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var response Task
+	var response task.Task
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "TASK-001", response.ID)
-	assert.Equal(t, "Test Task", response.Title)
+	assert.Equal(t, "Test task.Task", response.Title)
 	assert.Equal(t, "Test Description", response.Description)
 	assert.Equal(t, "In Progress", response.Status)
 	assert.Equal(t, "High", response.Priority)
@@ -62,11 +62,10 @@ func TestPostTaskHandler_WithDefaults(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	taskBody := map[string]any{
-		"title": "Minimal Task",
+		"title": "Minimal task.Task",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
 
@@ -78,7 +77,7 @@ func TestPostTaskHandler_WithDefaults(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var response Task
+	var response task.Task
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, "TODO", response.Status)
@@ -90,11 +89,10 @@ func TestPostTaskHandler_MissingTitle(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	taskBody := map[string]any{
-		"description": "Task without title",
+		"description": "task.Task without title",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
 
@@ -120,11 +118,10 @@ func TestPostTaskHandler_InvalidStatus(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	taskBody := map[string]any{
-		"title":  "Test Task",
+		"title":  "Test task.Task",
 		"status": "InvalidStatus",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
@@ -149,11 +146,10 @@ func TestPostTaskHandler_InvalidPriority(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	taskBody := map[string]any{
-		"title":    "Test Task",
+		"title":    "Test task.Task",
 		"priority": "InvalidPriority",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
@@ -178,8 +174,7 @@ func TestPostTaskHandler_InvalidJSON(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer([]byte("invalid json")))
 	req.Header.Set("Content-Type", "application/json")
@@ -199,30 +194,29 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	r := gin.Default()
-	r.POST("/api/task", postTaskHandler)
+	r := setupTestRouter()
 
 	// Create first task
-	taskBody1 := map[string]any{"title": "Task 1"}
+	taskBody1 := map[string]any{"title": "task.Task 1"}
 	jsonBody1, _ := json.Marshal(taskBody1)
 	req1, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody1))
 	req1.Header.Set("Content-Type", "application/json")
 	w1 := httptest.NewRecorder()
 	r.ServeHTTP(w1, req1)
 
-	var response1 Task
+	var response1 task.Task
 	json.Unmarshal(w1.Body.Bytes(), &response1)
 	assert.Equal(t, "TASK-001", response1.ID)
 
 	// Create second task
-	taskBody2 := map[string]any{"title": "Task 2"}
+	taskBody2 := map[string]any{"title": "task.Task 2"}
 	jsonBody2, _ := json.Marshal(taskBody2)
 	req2, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody2))
 	req2.Header.Set("Content-Type", "application/json")
 	w2 := httptest.NewRecorder()
 	r.ServeHTTP(w2, req2)
 
-	var response2 Task
+	var response2 task.Task
 	json.Unmarshal(w2.Body.Bytes(), &response2)
 	assert.Equal(t, "TASK-002", response2.ID)
 }
@@ -230,13 +224,13 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 func TestValidateTask(t *testing.T) {
 	tests := []struct {
 		name        string
-		task        Task
+		task        task.Task
 		expectError bool
 		errorFields []string
 	}{
 		{
 			name: "Valid task",
-			task: Task{
+			task: task.Task{
 				Title:    "Valid Title",
 				Status:   "TODO",
 				Priority: "High",
@@ -245,7 +239,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Empty title",
-			task: Task{
+			task: task.Task{
 				Title: "",
 			},
 			expectError: true,
@@ -253,7 +247,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Whitespace only title",
-			task: Task{
+			task: task.Task{
 				Title: "   ",
 			},
 			expectError: true,
@@ -261,7 +255,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Invalid status",
-			task: Task{
+			task: task.Task{
 				Title:  "Valid Title",
 				Status: "Invalid",
 			},
@@ -270,7 +264,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Invalid priority",
-			task: Task{
+			task: task.Task{
 				Title:    "Valid Title",
 				Priority: "Invalid",
 			},
@@ -279,7 +273,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Multiple errors",
-			task: Task{
+			task: task.Task{
 				Title:    "",
 				Status:   "Invalid",
 				Priority: "Invalid",
@@ -289,7 +283,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Valid status values",
-			task: Task{
+			task: task.Task{
 				Title:  "Test",
 				Status: "In Progress",
 			},
@@ -297,7 +291,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Valid priority values",
-			task: Task{
+			task: task.Task{
 				Title:    "Test",
 				Priority: "Low",
 			},
@@ -355,9 +349,9 @@ func TestSaveAndLoadTasks(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
-	tasks = []Task{
-		{ID: "TASK-001", Title: "Task 1", Status: "TODO", Priority: "High"},
-		{ID: "TASK-005", Title: "Task 2", Status: "Done", Priority: "Low"},
+	tasks = []task.Task{
+		{ID: "TASK-001", Title: "task.Task 1", Status: "TODO", Priority: "High"},
+		{ID: "TASK-005", Title: "task.Task 2", Status: "Done", Priority: "Low"},
 	}
 
 	err := saveTasks()
@@ -369,7 +363,7 @@ func TestSaveAndLoadTasks(t *testing.T) {
 
 	tasks = nil
 	nextID = 1
-	loadTasks()
+	LoadTasks()
 
 	assert.Equal(t, 2, len(tasks))
 	assert.Equal(t, 6, nextID) // Should be 6 since TASK-005 exists
@@ -381,10 +375,10 @@ func TestLoadTasks_EmptyFile(t *testing.T) {
 
 	os.WriteFile("data.json", []byte(""), 0644)
 
-	tasks = []Task{{ID: "test"}}
+	tasks = []task.Task{{ID: "test"}}
 	nextID = 999
 
-	loadTasks()
+	LoadTasks()
 
 	// Should not modify tasks if file is empty
 	assert.Equal(t, 1, len(tasks))
@@ -396,10 +390,10 @@ func TestLoadTasks_NonExistentFile(t *testing.T) {
 
 	os.Remove("data.json")
 
-	tasks = []Task{{ID: "test"}}
+	tasks = []task.Task{{ID: "test"}}
 	nextID = 999
 
-	loadTasks()
+	LoadTasks()
 
 	// Should not crash or modify tasks
 	assert.Equal(t, 1, len(tasks))

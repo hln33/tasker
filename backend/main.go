@@ -5,13 +5,20 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	"tasker/internal/handlers"
 )
 
 func init() {
-	loadTasks()
+	handlers.LoadTasks()
 }
 
-// setupRouter configures and returns the Gin router with all routes
+func healthCheckHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "hello world",
+	})
+}
+
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
@@ -25,29 +32,10 @@ func setupRouter() *gin.Engine {
 	}))
 
 	r.GET("/", healthCheckHandler)
-	r.GET("/api/task", getTaskHandler)
-	r.POST("/api/task", postTaskHandler)
+	r.GET("/api/task", handlers.GetTaskHandler)
+	r.POST("/api/task", handlers.PostTaskHandler)
 
 	return r
-}
-
-// returns a hello world message
-func healthCheckHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "hello world",
-	})
-}
-
-// returns a single task
-func getTaskHandler(c *gin.Context) {
-	task := Task{
-		ID:          "TASK-001",
-		Title:       "Setup project repository",
-		Description: "Initialize the repository with basic project structure",
-		Status:      "In Progress",
-		Priority:    "High",
-	}
-	c.JSON(http.StatusOK, task)
 }
 
 func main() {

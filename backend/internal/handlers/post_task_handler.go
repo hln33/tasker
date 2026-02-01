@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -6,24 +6,17 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	task "tasker/internal/Task"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Task struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	Priority    string `json:"priority"`
-}
-
 var (
-	tasks  []Task
+	tasks  []task.Task
 	nextID int = 1
 )
 
-func loadTasks() {
+func LoadTasks() {
 	data, err := os.ReadFile("data.json")
 	if err != nil || len(data) == 0 {
 		return
@@ -55,7 +48,7 @@ func generateNextID() string {
 	return id
 }
 
-func validateTask(task Task) map[string]string {
+func validateTask(task task.Task) map[string]string {
 	errors := make(map[string]string)
 
 	if strings.TrimSpace(task.Title) == "" {
@@ -75,21 +68,18 @@ func validateTask(task Task) map[string]string {
 	return errors
 }
 
-// postTaskHandler creates a new task
-func postTaskHandler(c *gin.Context) {
-	var task Task
+func PostTaskHandler(c *gin.Context) {
+	var task task.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return
 	}
 
-	// Validate
 	if validationErrors := validateTask(task); len(validationErrors) > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": validationErrors})
 		return
 	}
 
-	// Generate ID and set defaults
 	task.ID = generateNextID()
 	if task.Status == "" {
 		task.Status = "TODO"
