@@ -1,16 +1,80 @@
 package main
 
 import (
+	"context"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
+	"tasker/internal/config"
+	"tasker/internal/database"
 	"tasker/internal/handlers"
+	"tasker/internal/repository"
 )
 
-func init() {
-	handlers.LoadTasks()
+func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: error loading .env file: %v", err)
+	}
+
+	// Load configuration
+	cfg := config.Load()
+
+	// Connect to database
+	db, err := database.Connect(cfg.DatabaseURL())
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer database.Close()
+
+	// Run migrations
+	if err := runMigrations(cfg); err != nil {
+		log.Printf("Warning: failed to run migrations: %v", err)
+	}
+
+	// Initialize repository
+	repository.Tasks = repository.NewTaskRepository(db)
+
+	// Initialize ID generator from existing tasks
+	existingTasks, _ := repository.Tasks.GetAllTasks()
+	if len(existingTasks) > 0 {
+		handlers.InitTaskIDGenerator(existingTasks)
+	}
+
+	// Setup router
+	r := setupRouter()
+
+	// Start server with graceful shutdown
+	startServer(r)
+}
+
+func runMigrations(cfg *config.Config) error {
+	migrationFiles := []string{
+		"migrations/000001_create_tasks_table.up.sql",
+	}
+
+	for _, file := range migrationFiles {
+		content, err := ioutil.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
+		if _, err := database.DB.Exec(string(content)); err != nil {
+			return err
+		}
+		log.Printf("Migration completed: %s", file)
+	}
+
+	return nil
 }
 
 func healthCheckHandler(c *gin.Context) {
@@ -38,7 +102,34 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-func main() {
-	r := setupRouter()
-	r.Run(":8080")
+func startServer(r *gin.Engine) {
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+
+	// Start server in a goroutine
+	go func() {
+		log.Println("Server starting on :8080")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server failed to start: %v", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down server...")
+
+	// Give the server 5 seconds to complete existing requests
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
+
+	log.Println("Server exited")
 }

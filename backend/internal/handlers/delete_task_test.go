@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	task "tasker/internal/Task"
 	"testing"
 
@@ -120,37 +119,6 @@ func TestDeleteTaskHandler_MultipleTasks(t *testing.T) {
 	assert.True(t, taskIDs[task1.ID])
 	assert.True(t, taskIDs[task3.ID])
 	assert.False(t, taskIDs[task2.ID])
-}
-
-func TestDeleteTaskHandler_Persistence(t *testing.T) {
-	setupTest()
-	defer tearDownTest()
-
-	r := setupTestRouter()
-
-	// Create a task
-	jsonBody := marshalTaskBody("Persistent task", "", "TODO", "Medium")
-	postW := makePostRequest(r, jsonBody)
-
-	var createdTask task.Task
-	json.Unmarshal(postW.Body.Bytes(), &createdTask)
-
-	// Delete it
-	deleteW := makeDeleteRequest(r, createdTask.ID)
-	assert.Equal(t, http.StatusNoContent, deleteW.Code)
-
-	// Verify file was updated
-	if _, err := os.Stat("data.json"); os.IsNotExist(err) {
-		t.Error("data.json file should exist")
-	}
-
-	data, err := os.ReadFile("data.json")
-	assert.NoError(t, err)
-
-	var savedTasks []task.Task
-	json.Unmarshal(data, &savedTasks)
-
-	assert.Equal(t, 0, len(savedTasks))
 }
 
 func TestDeleteTaskHandler_DeleteTwice(t *testing.T) {

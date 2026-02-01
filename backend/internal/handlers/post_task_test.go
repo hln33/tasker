@@ -1,38 +1,13 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
-	"os"
 	task "tasker/internal/Task"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
-
-func setupTest() {
-	gin.SetMode(gin.TestMode)
-	tasks = nil
-	nextID = 1
-	os.Remove("data.json")
-}
-
-func tearDownTest() {
-	os.Remove("data.json")
-}
-
-func makePostRequest(r *gin.Engine, body []byte) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-
-	r.ServeHTTP(w, req)
-
-	return w
-}
 
 func TestPostTaskHandler_Success(t *testing.T) {
 	setupTest()
@@ -294,58 +269,4 @@ func TestGenerateNextID(t *testing.T) {
 			assert.Equal(t, tt.setupID+1, nextID)
 		})
 	}
-}
-
-func TestSaveAndLoadTasks(t *testing.T) {
-	setupTest()
-	defer tearDownTest()
-
-	tasks = []task.Task{
-		{ID: "TASK-001", Title: "task.Task 1", Status: "TODO", Priority: "High"},
-		{ID: "TASK-005", Title: "task.Task 2", Status: "Done", Priority: "Low"},
-	}
-
-	err := saveTasks()
-	assert.NoError(t, err)
-
-	if _, err := os.Stat("data.json"); os.IsNotExist(err) {
-		t.Error("data.json file was not created")
-	}
-
-	tasks = nil
-	nextID = 1
-	LoadTasks()
-
-	assert.Equal(t, 2, len(tasks))
-	assert.Equal(t, 6, nextID) // Should be 6 since TASK-005 exists
-}
-
-func TestLoadTasks_EmptyFile(t *testing.T) {
-	setupTest()
-	defer tearDownTest()
-
-	os.WriteFile("data.json", []byte(""), 0644)
-
-	tasks = []task.Task{{ID: "test"}}
-	nextID = 999
-
-	LoadTasks()
-
-	// Should not modify tasks if file is empty
-	assert.Equal(t, 1, len(tasks))
-}
-
-func TestLoadTasks_NonExistentFile(t *testing.T) {
-	setupTest()
-	defer tearDownTest()
-
-	os.Remove("data.json")
-
-	tasks = []task.Task{{ID: "test"}}
-	nextID = 999
-
-	LoadTasks()
-
-	// Should not crash or modify tasks
-	assert.Equal(t, 1, len(tasks))
 }

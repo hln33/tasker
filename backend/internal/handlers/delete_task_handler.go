@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
+	"tasker/internal/repository"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,25 +12,12 @@ import (
 func DeleteTaskHandler(c *gin.Context) {
 	taskID := c.Param("id")
 
-	// Find the task by ID
-	found := false
-	for i, task := range tasks {
-		if task.ID == taskID {
-			// Remove task from slice
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			found = true
-			break
+	if err := repository.Tasks.DeleteTask(taskID); err != nil {
+		if strings.Contains(err.Error(), "task not found") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+			return
 		}
-	}
-
-	if !found {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
-		return
-	}
-
-	// Save to file
-	if err := saveTasks(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save tasks"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete task"})
 		return
 	}
 

@@ -5,17 +5,38 @@ A simple REST API built with Go and Gin, designed to be expanded into a Jira-lik
 ## Requirements
 
 - Go 1.18 or higher
+- PostgreSQL 12 or higher
 
 ## Installation
 
+1. Install dependencies:
 ```bash
 go mod download
 ```
 
-## Running the Server
+2. Install PostgreSQL:
+```bash
+# macOS
+brew install postgresql
+brew services start postgresql
 
-Start the server on port 8080:
+# Ubuntu
+sudo apt-get install postgresql
+sudo systemctl start postgresql
+```
 
+3. Create database:
+```bash
+createdb tasker_db
+```
+
+4. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database credentials
+```
+
+5. Run the server:
 ```bash
 go run main.go
 ```
@@ -64,12 +85,44 @@ Run a specific test:
 go test -v -run TestHealthCheckHandler
 ```
 
-## Project Structure
+## Architecture
+
+### Request Flow: Handler → Repository → Database
+
+This application follows the **Repository Pattern** to separate business logic from data access:
 
 ```
-.
-├── main.go          # Application entry point and route handlers
-├── main_test.go     # Test suite
-├── go.mod           # Go module definition
-└── README.md        # This file
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           REQUEST FLOW                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. HTTP Request                                                            │
+│     │                                                                       │
+│     ▼                                                                       │
+│  ┌──────────────────┐                                                       │
+│  │   HTTP Handler   │  ◄── Parses JSON, validates input, returns HTTP      │
+│  └────────┬─────────┘       responses, handles status codes                  │
+│           │                                                                 │
+│           │ calls repository methods                                         │
+│           ▼                                                                 │
+│  ┌──────────────────┐                                                       │
+│  │    Repository    │  ◄── Executes SQL queries, manages database           │
+│  └────────┬─────────┘       connection, handles data logic                   │
+│           │                                                                 │
+│           │ executes SQL                                                     │
+│           ▼                                                                 │
+│  ┌──────────────────┐                                                       │
+│  │   PostgreSQL DB  │  ◄── Stores and retrieves task data                   │
+│  └──────────────────┘                                                       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Layer Responsibilities
+
+| Layer          | Responsibility                                          | Location                |
+|----------------|---------------------------------------------------------|-------------------------|
+| **Handler**    | - Parse HTTP requests<br>- Validate JSON input<br>- Return HTTP status codes<br>- No SQL/database logic | `internal/handlers/`    |
+| **Repository** | - Execute SQL queries<br>- Map database rows to structs<br>- Handle connection errors<br>- Transaction management | `internal/repository/`  |
+| **Database**   | - Persistent data storage<br>- ACID guarantees<br>- Indexing and constraints | PostgreSQL              |
+andlers focus on HTTP, repository focuses on data

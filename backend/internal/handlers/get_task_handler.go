@@ -1,27 +1,19 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
-	"os"
-	task "tasker/internal/Task"
+	"tasker/internal/repository"
 
 	"github.com/gin-gonic/gin"
 )
 
-// returns a single task
+// GetTaskHandler returns all tasks
 func GetTaskHandler(c *gin.Context) {
-	data, err := os.ReadFile("data.json")
-	if err != nil || len(data) == 0 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No tasks found"})
+	tasks, err := repository.Tasks.GetAllTasks()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get tasks"})
 		return
 	}
 
-	fetchedTasks := []task.Task{}
-	if err := json.Unmarshal(data, &fetchedTasks); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse tasks"})
-		return
-	}
-
-	c.JSON(http.StatusOK, fetchedTasks)
+	c.JSON(http.StatusOK, tasks)
 }
