@@ -1,18 +1,30 @@
 package handlers
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTaskHandler(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+	setupTest()
+	defer tearDownTest()
 
 	r := setupTestRouter()
+
+	// Create a test task first
+	jsonBody := marshalTaskBody("Setup project repository", "Initialize the repository with basic project structure", "In Progress", "High")
+	postReq, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
+	postReq.Header.Set("Content-Type", "application/json")
+	postW := httptest.NewRecorder()
+	r.ServeHTTP(postW, postReq)
+
+	assert.Equal(t, http.StatusCreated, postW.Code)
+
+	// Now test GET
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/task", nil)
 

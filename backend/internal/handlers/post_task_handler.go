@@ -40,6 +40,7 @@ func saveTasks() error {
 	if err != nil {
 		return err
 	}
+
 	return os.WriteFile("data.json", data, 0644)
 }
 

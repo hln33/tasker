@@ -22,7 +22,6 @@ func healthCheckHandler(c *gin.Context) {
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Configure CORS middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5174"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

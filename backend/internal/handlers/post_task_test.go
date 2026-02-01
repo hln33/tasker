@@ -40,13 +40,7 @@ func TestPostTaskHandler_Success(t *testing.T) {
 
 	r := setupTestRouter()
 
-	taskBody := map[string]any{
-		"title":       "Test task.Task",
-		"description": "Test Description",
-		"status":      "In Progress",
-		"priority":    "High",
-	}
-	jsonBody, _ := json.Marshal(taskBody)
+	jsonBody := marshalTaskBody("Test task.Task", "Test Description", "In Progress", "High")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
@@ -68,10 +62,7 @@ func TestPostTaskHandler_WithDefaults(t *testing.T) {
 
 	r := setupTestRouter()
 
-	taskBody := map[string]any{
-		"title": "Minimal task.Task",
-	}
-	jsonBody, _ := json.Marshal(taskBody)
+	jsonBody := marshalTaskBody("Minimal task.Task", "", "", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
@@ -90,10 +81,7 @@ func TestPostTaskHandler_MissingTitle(t *testing.T) {
 
 	r := setupTestRouter()
 
-	taskBody := map[string]any{
-		"description": "task.Task without title",
-	}
-	jsonBody, _ := json.Marshal(taskBody)
+	jsonBody := marshalTaskBody("", "task.Task without title", "", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -114,11 +102,7 @@ func TestPostTaskHandler_InvalidStatus(t *testing.T) {
 
 	r := setupTestRouter()
 
-	taskBody := map[string]any{
-		"title":  "Test task.Task",
-		"status": "InvalidStatus",
-	}
-	jsonBody, _ := json.Marshal(taskBody)
+	jsonBody := marshalTaskBody("Test task.Task", "", "InvalidStatus", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -137,11 +121,7 @@ func TestPostTaskHandler_InvalidPriority(t *testing.T) {
 
 	r := setupTestRouter()
 
-	taskBody := map[string]any{
-		"title":    "Test task.Task",
-		"priority": "InvalidPriority",
-	}
-	jsonBody, _ := json.Marshal(taskBody)
+	jsonBody := marshalTaskBody("Test task.Task", "", "", "InvalidPriority")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -176,8 +156,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	r := setupTestRouter()
 
 	// Create first task
-	taskBody1 := map[string]any{"title": "task.Task 1"}
-	jsonBody1, _ := json.Marshal(taskBody1)
+	jsonBody1 := marshalTaskBody("task.Task 1", "", "", "")
 	w1 := makePostRequest(r, jsonBody1)
 
 	var response1 task.Task
@@ -185,8 +164,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	assert.Equal(t, "TASK-001", response1.ID)
 
 	// Create second task
-	taskBody2 := map[string]any{"title": "task.Task 2"}
-	jsonBody2, _ := json.Marshal(taskBody2)
+	jsonBody2 := marshalTaskBody("task.Task 2", "", "", "")
 	w2 := makePostRequest(r, jsonBody2)
 
 	var response2 task.Task

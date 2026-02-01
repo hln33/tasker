@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TASK-001",
+    "title": "Setup project repository",
+    "description": "Initialize the repository with basic project structure and configuration files",
+    "status": "Done",
+    "priority": "High"
+  },
+  {
+    "id": "TASK-002",
+    "title": "Design database schema",
+    "description": "Create the database schema for tasks, users, and project assignments",
+    "status": "In Progress",
+    "priority": "High"
+  },
+  {
+    "id": "TASK-003",
+    "title": "Implement user authentication",
+    "description": "Add login/logout functionality with JWT token-based authentication",
+    "status": "TODO",
+    "priority": "High"
+  },
+  {
+    "id": "TASK-004",
+    "title": "Create task CRUD API",
+    "description": "Implement create, read, update, and delete endpoints for task management",
+    "status": "In Progress",
+    "priority": "Medium"
+  },
+  {
+    "id": "TASK-005",
+    "title": "Write unit tests",
+    "description": "Add comprehensive unit tests for all API endpoints and business logic",
+    "status": "TODO",
+    "priority": "Low"
+  }
+]
