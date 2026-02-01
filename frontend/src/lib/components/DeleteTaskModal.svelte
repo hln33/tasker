@@ -40,30 +40,30 @@
 </script>
 
 {#if open}
-	<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-		<div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-			<div class="p-6 border-b border-gray-200">
+	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+		<div class="w-full max-w-md rounded-lg bg-white shadow-xl">
+			<div class="border-b border-gray-200 p-6">
 				<h2 class="text-2xl font-bold text-gray-900">Delete Task</h2>
 			</div>
 
-			<div class="p-6 space-y-4">
+			<div class="space-y-4 p-6">
 				{#if errorMessage}
-					<div class="bg-red-50 border border-red-200 rounded-lg p-4">
-						<p class="text-red-800 text-sm">{errorMessage}</p>
+					<div class="rounded-lg border border-red-200 bg-red-50 p-4">
+						<p class="text-sm text-red-800">{errorMessage}</p>
 					</div>
 				{/if}
 
 				<p class="text-gray-700">
 					Are you sure you want to delete the task
-					<span class="font-semibold text-gray-900">"{task?.title}"</span
-					>? This action cannot be undone.
+					<span class="font-semibold text-gray-900">"{task?.title}"</span>? This action cannot be
+					undone.
 				</p>
 
 				<div class="flex gap-3 pt-4">
 					<button
 						onclick={handleDelete}
 						disabled={isDeleting}
-						class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:bg-gray-400 cursor-pointer"
+						class="flex-1 cursor-pointer rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:bg-gray-400"
 						type="button"
 					>
 						{isDeleting ? 'Deleting...' : 'Delete'}
@@ -71,7 +71,7 @@
 					<button
 						onclick={handleClose}
 						disabled={isDeleting}
-						class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 font-medium cursor-pointer"
+						class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-200"
 						type="button"
 					>
 						Cancel

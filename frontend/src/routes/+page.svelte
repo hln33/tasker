@@ -54,60 +54,60 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-200 py-12 px-4">
-	<div class="max-w-2xl mx-auto">
-		<div class="flex justify-between items-center mb-8">
+<div class="min-h-screen bg-gray-200 px-4 py-12">
+	<div class="mx-auto max-w-2xl">
+		<div class="mb-8 flex items-center justify-between">
 			<h1 class="text-3xl font-bold text-gray-900">Tasker</h1>
 			<button
 				onclick={openAddTaskModal}
-				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
+				class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
 			>
 				Add Task
 			</button>
 		</div>
 
 		{#if successMessage}
-			<div class="mb-4 bg-green-50 border border-green-200 rounded-lg p-4">
+			<div class="mb-4 rounded-lg border border-green-200 bg-green-50 p-4">
 				<p class="text-green-800">{successMessage}</p>
 			</div>
 		{/if}
 
-    {#await data.tasks}
-      <div class="bg-white rounded-lg shadow p-6">
-        <p class="text-gray-700">Loading task...</p>
-      </div>
-    {:then tasks}
-      <div class="flex flex-col gap-6">
-        {#each tasks as task}
-          <TaskCard task={task} onDelete={openDeleteModal} />
-        {/each}
-      </div>
-    {:catch error}
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p class="text-red-800 font-medium">Error</p>
-          <p class="text-red-600 mt-1">{error.message}</p>
-        </div>
-        <p class="text-gray-500 text-sm mt-4">
-          Make sure the backend is running on http://localhost:8080
-        </p>
-      </div>
-    {/await}
+		{#await data.tasks}
+			<div class="rounded-lg bg-white p-6 shadow">
+				<p class="text-gray-700">Loading task...</p>
+			</div>
+		{:then tasks}
+			<div class="flex flex-col gap-6">
+				{#each tasks as task}
+					<TaskCard {task} onDelete={openDeleteModal} />
+				{/each}
+			</div>
+		{:catch error}
+			<div class="rounded-lg bg-white p-6 shadow">
+				<div class="rounded-lg border border-red-200 bg-red-50 p-4">
+					<p class="font-medium text-red-800">Error</p>
+					<p class="mt-1 text-red-600">{error.message}</p>
+				</div>
+				<p class="mt-4 text-sm text-gray-500">
+					Make sure the backend is running on http://localhost:8080
+				</p>
+			</div>
+		{/await}
 
-    <AddTaskModal
-      open={showAddTaskModal}
-      onClose={() => {
-        closeAddTaskModal();
-        handleTaskCreated();
-      }}
-    />
-    <DeleteTaskModal
-      open={showDeleteModal}
-      task={taskToDelete}
-      onClose={() => {
-        closeDeleteModal();
-        handleTaskDeleted();
-      }}
-    />
+		<AddTaskModal
+			open={showAddTaskModal}
+			onClose={() => {
+				closeAddTaskModal();
+				handleTaskCreated();
+			}}
+		/>
+		<DeleteTaskModal
+			open={showDeleteModal}
+			task={taskToDelete}
+			onClose={() => {
+				closeDeleteModal();
+				handleTaskDeleted();
+			}}
+		/>
 	</div>
 </div>

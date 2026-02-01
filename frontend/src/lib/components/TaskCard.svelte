@@ -30,20 +30,20 @@
 	};
 </script>
 
-<div class="bg-white rounded-lg shadow-lg">
-	<div class="p-6 border-b border-gray-200">
+<div class="rounded-lg bg-white shadow-lg">
+	<div class="border-b border-gray-200 p-6">
 		<div class="flex items-start justify-between">
 			<div>
 				<span class="text-sm font-medium text-gray-500">{task.id}</span>
-				<h2 class="text-2xl font-bold text-gray-900 mt-1">{task.title}</h2>
+				<h2 class="mt-1 text-2xl font-bold text-gray-900">{task.title}</h2>
 			</div>
 			<div class="flex items-center gap-3">
-				<span class="px-3 py-1 rounded-full text-sm font-medium {getPriorityColor(task.priority)}">
+				<span class="rounded-full px-3 py-1 text-sm font-medium {getPriorityColor(task.priority)}">
 					{task.priority}
 				</span>
 				<button
 					onclick={() => onDelete(task)}
-					class="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors cursor-pointer"
+					class="cursor-pointer rounded-lg p-2 text-red-600 transition-colors hover:bg-red-200"
 					aria-label="Delete task"
 				>
 					<svg
@@ -52,7 +52,7 @@
 						viewBox="0 0 24 24"
 						stroke-width="1.5"
 						stroke="currentColor"
-						class="hover:stroke-red-700 w-5 h-5"
+						class="h-5 w-5 hover:stroke-red-700"
 					>
 						<path
 							stroke-linecap="round"
@@ -66,14 +66,14 @@
 	</div>
 
 	<div class="p-6">
-		<h3 class="text-sm font-medium text-gray-500 mb-2">Description</h3>
+		<h3 class="mb-2 text-sm font-medium text-gray-500">Description</h3>
 		<p class="text-gray-700">{task.description}</p>
 	</div>
 
-	<div class="p-6 rounded-b-lg">
+	<div class="rounded-b-lg p-6">
 		<div class="flex items-center">
-			<span class="text-sm text-gray-500 mr-2">Status:</span>
-			<span class="px-3 py-1 rounded-full text-sm font-medium {getStatusColor(task.status)}">
+			<span class="mr-2 text-sm text-gray-500">Status:</span>
+			<span class="rounded-full px-3 py-1 text-sm font-medium {getStatusColor(task.status)}">
 				{task.status}
 			</span>
 		</div>
