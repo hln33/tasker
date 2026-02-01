@@ -1,11 +1,15 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { Task } from '$lib/types';
 	import { invalidate } from '$app/navigation';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
+	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	let showAddTaskModal = $state(false);
+	let showDeleteModal = $state(false);
+	let taskToDelete = $state<Task | null>(null);
 	let successMessage = $state('');
 
 	const getPriorityColor = (priority: string) => {
@@ -13,7 +17,7 @@
 			case 'high':
 				return 'bg-red-100 text-red-800';
 			case 'medium':
-				return 'bg-yellow-100 text-yellow-800';
+				return 'bg-yellow-300 text-yellow-800';
 			case 'low':
 				return 'bg-green-100 text-green-800';
 			default:
@@ -54,6 +58,25 @@
 			successMessage = '';
 		}, 3000);
 	}
+
+	function openDeleteModal(task: Task) {
+		taskToDelete = task;
+		showDeleteModal = true;
+		successMessage = '';
+	}
+
+	function closeDeleteModal() {
+		showDeleteModal = false;
+		taskToDelete = null;
+	}
+
+	async function handleTaskDeleted() {
+		await invalidate('http://localhost:8080/api/task');
+		successMessage = 'Task deleted successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+	}
 </script>
 
 <div class="min-h-screen bg-gray-200 py-12 px-4">
@@ -88,9 +111,20 @@
                   <span class="text-sm font-medium text-gray-500">{task.id}</span>
                   <h2 class="text-2xl font-bold text-gray-900 mt-1">{task.title}</h2>
                 </div>
-                <span class="px-3 py-1 rounded-full text-sm font-medium {getPriorityColor(task.priority)}">
-                  {task.priority}
-                </span>
+                <div class="flex items-center gap-3">
+                  <span class="px-3 py-1 rounded-full text-sm font-medium {getPriorityColor(task.priority)}">
+                    {task.priority}
+                  </span>
+                  <button
+                    onclick={() => openDeleteModal(task)}
+                    class="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors cursor-pointer"
+                    aria-label="Delete task"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hover:stroke-red-700 w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
   
@@ -127,6 +161,14 @@
       onClose={() => {
         closeAddTaskModal();
         handleTaskCreated();
+      }}
+    />
+    <DeleteTaskModal
+      open={showDeleteModal}
+      task={taskToDelete}
+      onClose={() => {
+        closeDeleteModal();
+        handleTaskDeleted();
       }}
     />
 	</div>

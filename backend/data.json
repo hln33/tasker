@@ -1,12 +1,5 @@
 [
   {
-    "id": "TASK-001",
-    "title": "Setup project repository",
-    "description": "Initialize the repository with basic project structure and configuration files",
-    "status": "Done",
-    "priority": "High"
-  },
-  {
     "id": "TASK-002",
     "title": "Design database schema",
     "description": "Create the database schema for tasks, users, and project assignments",
@@ -33,5 +26,19 @@
     "description": "Add comprehensive unit tests for all API endpoints and business logic",
     "status": "TODO",
     "priority": "Low"
+  },
+  {
+    "id": "TASK-006",
+    "title": "abc",
+    "description": "asd",
+    "status": "TODO",
+    "priority": "Medium"
+  },
+  {
+    "id": "TASK-007",
+    "title": "lol",
+    "description": "",
+    "status": "In Progress",
+    "priority": "Medium"
   }
 ]

@@ -33,6 +33,7 @@ func setupRouter() *gin.Engine {
 	r.GET("/", healthCheckHandler)
 	r.GET("/api/task", handlers.GetTaskHandler)
 	r.POST("/api/task", handlers.PostTaskHandler)
+	r.DELETE("/api/task/:id", handlers.DeleteTaskHandler)
 
 	return r
 }

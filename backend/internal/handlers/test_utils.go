@@ -11,6 +11,7 @@ func setupTestRouter() *gin.Engine {
 
 	r.GET("/api/task", GetTaskHandler)
 	r.POST("/api/task", PostTaskHandler)
+	r.DELETE("/api/task/:id", DeleteTaskHandler)
 
 	return r
 }
