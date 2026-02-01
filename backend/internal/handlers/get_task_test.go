@@ -15,7 +15,6 @@ func TestGetTaskHandler(t *testing.T) {
 
 	r := setupTestRouter()
 
-	// Create a test task first
 	jsonBody := marshalTaskBody("Setup project repository", "Initialize the repository with basic project structure", "In Progress", "High")
 	postReq, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
 	postReq.Header.Set("Content-Type", "application/json")
@@ -24,7 +23,6 @@ func TestGetTaskHandler(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, postW.Code)
 
-	// Now test GET
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/task", nil)
 
