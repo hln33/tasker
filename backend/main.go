@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 
 	"tasker/internal/config"
@@ -29,10 +30,21 @@ func main() {
 	// Load configuration
 	cfg := config.Load()
 
-	// Connect to database
-	db, err := database.Connect(cfg.DatabaseURL())
+	// Connect to database with retry logic for containerized environments
+	var db *sqlx.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		db, err = database.Connect(cfg.DatabaseURL())
+		if err == nil {
+			break
+		}
+		log.Printf("Database connection attempt %d failed: %v", i+1, err)
+		if i < 9 {
+			time.Sleep(2 * time.Second)
+		}
+	}
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to connect to database after 10 attempts: %v", err)
 	}
 	defer database.Close()
 

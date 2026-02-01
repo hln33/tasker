@@ -31,10 +31,12 @@ func NewTaskRepository(db *sqlx.DB) *TaskRepository {
 func (r *TaskRepository) GetAllTasks() ([]task.Task, error) {
 	var tasks []task.Task
 	query := `SELECT id, title, description, status, priority, created_at, updated_at FROM tasks ORDER BY created_at DESC`
+
 	err := r.db.Select(&tasks, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tasks: %w", err)
 	}
+
 	return tasks, nil
 }
 
@@ -42,12 +44,14 @@ func (r *TaskRepository) GetTaskByID(id string) (*task.Task, error) {
 	var t task.Task
 	query := `SELECT id, title, description, status, priority, created_at, updated_at FROM tasks WHERE id = $1`
 	err := r.db.Get(&t, query, id)
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("task not found: %s", id)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
+
 	return &t, nil
 }
 
@@ -75,7 +79,6 @@ func (r *TaskRepository) CreateTask(t task.Task) (*task.Task, error) {
 		&createdTask.CreatedAt,
 		&createdTask.UpdatedAt,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create task: %w", err)
 	}
