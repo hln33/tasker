@@ -85,7 +85,7 @@
 			<h1 class="text-3xl font-bold text-gray-900">Tasker</h1>
 			<button
 				onclick={openAddTaskModal}
-				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+				class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
 			>
 				Add Task
 			</button>

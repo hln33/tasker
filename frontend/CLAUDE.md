@@ -21,3 +21,25 @@ You MUST use this tool whenever writing Svelte code before sending it to the use
 
 Generates a Svelte Playground link with the provided code.
 After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+
+---
+
+## Frontend Development Guidelines
+
+### Button Styling Requirements
+
+When creating or modifying buttons in this project, **ALL buttons must include the `cursor-pointer` class** to ensure proper user experience and accessibility.
+
+#### Required Classes Checklist
+For every button element, ensure it has:
+- ✅ `cursor-pointer` - **MANDATORY** for all interactive buttons
+- ✅ Hover state (`hover:bg-*` or `hover:text-*`)
+- ✅ Padding (`px-* py-*` or `p-*`)
+- ✅ Border radius (`rounded-lg`)
+- ✅ ARIA label for icon-only buttons (`aria-label="..."`)
+
+#### Common Mistakes to Avoid
+- ❌ Omitting `cursor-pointer` class
+- ❌ Using `cursor-default` on buttons
+- ❌ Missing hover states for better UX
+- ❌ Forgetting ARIA labels on icon buttons
