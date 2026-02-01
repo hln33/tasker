@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Test helper functions
 func setupTest() {
 	gin.SetMode(gin.TestMode)
 	tasks = nil
@@ -23,6 +22,16 @@ func setupTest() {
 
 func tearDownTest() {
 	os.Remove("data.json")
+}
+
+func makePostRequest(r *gin.Engine, body []byte) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+
+	return w
 }
 
 func TestPostTaskHandler_Success(t *testing.T) {
@@ -38,12 +47,7 @@ func TestPostTaskHandler_Success(t *testing.T) {
 		"priority":    "High",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
@@ -68,12 +72,7 @@ func TestPostTaskHandler_WithDefaults(t *testing.T) {
 		"title": "Minimal task.Task",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
@@ -95,12 +94,7 @@ func TestPostTaskHandler_MissingTitle(t *testing.T) {
 		"description": "task.Task without title",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -125,12 +119,7 @@ func TestPostTaskHandler_InvalidStatus(t *testing.T) {
 		"status": "InvalidStatus",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -153,12 +142,7 @@ func TestPostTaskHandler_InvalidPriority(t *testing.T) {
 		"priority": "InvalidPriority",
 	}
 	jsonBody, _ := json.Marshal(taskBody)
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -175,12 +159,7 @@ func TestPostTaskHandler_InvalidJSON(t *testing.T) {
 	defer tearDownTest()
 
 	r := setupTestRouter()
-
-	req, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer([]byte("invalid json")))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
+	w := makePostRequest(r, []byte("invalid json"))
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -199,10 +178,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	// Create first task
 	taskBody1 := map[string]any{"title": "task.Task 1"}
 	jsonBody1, _ := json.Marshal(taskBody1)
-	req1, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody1))
-	req1.Header.Set("Content-Type", "application/json")
-	w1 := httptest.NewRecorder()
-	r.ServeHTTP(w1, req1)
+	w1 := makePostRequest(r, jsonBody1)
 
 	var response1 task.Task
 	json.Unmarshal(w1.Body.Bytes(), &response1)
@@ -211,10 +187,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	// Create second task
 	taskBody2 := map[string]any{"title": "task.Task 2"}
 	jsonBody2, _ := json.Marshal(taskBody2)
-	req2, _ := http.NewRequest("POST", "/api/task", bytes.NewBuffer(jsonBody2))
-	req2.Header.Set("Content-Type", "application/json")
-	w2 := httptest.NewRecorder()
-	r.ServeHTTP(w2, req2)
+	w2 := makePostRequest(r, jsonBody2)
 
 	var response2 task.Task
 	json.Unmarshal(w2.Body.Bytes(), &response2)

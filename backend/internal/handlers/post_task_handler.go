@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	task "tasker/internal/Task"
 
@@ -55,13 +56,13 @@ func validateTask(task task.Task) map[string]string {
 		errors["title"] = "title is required"
 	}
 
-	validStatuses := map[string]bool{"TODO": true, "In Progress": true, "Done": true}
-	if task.Status != "" && !validStatuses[task.Status] {
+	validStatuses := []string{"TODO", "In Progress", "Done"}
+	if task.Status != "" && !slices.Contains(validStatuses, task.Status) {
 		errors["status"] = "status must be one of: TODO, In Progress, Done"
 	}
 
-	validPriorities := map[string]bool{"Low": true, "Medium": true, "High": true}
-	if task.Priority != "" && !validPriorities[task.Priority] {
+	validPriorities := []string{"Low", "Medium", "High"}
+	if task.Priority != "" && !slices.Contains(validPriorities, task.Priority) {
 		errors["priority"] = "priority must be one of: Low, Medium, High"
 	}
 
