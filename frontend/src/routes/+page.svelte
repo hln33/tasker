@@ -55,7 +55,7 @@
 </script>
 
 <div class="min-h-screen bg-gray-200 px-4 py-12">
-	<div class="mx-auto max-w-2xl">
+	<div class="mx-auto max-w-7xl">
 		<div class="mb-8 flex items-center justify-between">
 			<h1 class="text-3xl font-bold text-gray-900">Tasker</h1>
 			<button
@@ -77,10 +77,48 @@
 				<p class="text-gray-700">Loading task...</p>
 			</div>
 		{:then tasks}
-			<div class="flex flex-col gap-6">
-				{#each tasks as task}
-					<TaskCard {task} onDelete={openDeleteModal} />
-				{/each}
+			{@const todoTasks = tasks.filter(t => t.status === 'TODO')}
+			{@const inProgressTasks = tasks.filter(t => t.status === 'In Progress')}
+			{@const doneTasks = tasks.filter(t => t.status === 'Done')}
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+				<!-- TODO Column -->
+				<div class="rounded-lg bg-gray-50 p-4">
+					<h2 class="mb-4 text-lg font-bold text-gray-700">TODO</h2>
+					<div class="flex flex-col gap-4">
+						{#each todoTasks as task}
+							<TaskCard {task} onDelete={openDeleteModal} />
+						{/each}
+						{#if todoTasks.length === 0}
+							<p class="text-sm italic text-gray-500">No tasks to do</p>
+						{/if}
+					</div>
+				</div>
+
+				<!-- In Progress Column -->
+				<div class="rounded-lg bg-blue-50 p-4">
+					<h2 class="mb-4 text-lg font-bold text-blue-700">In Progress</h2>
+					<div class="flex flex-col gap-4">
+						{#each inProgressTasks as task}
+							<TaskCard {task} onDelete={openDeleteModal} />
+						{/each}
+						{#if inProgressTasks.length === 0}
+							<p class="text-sm italic text-gray-500">No tasks in progress</p>
+						{/if}
+					</div>
+				</div>
+
+				<!-- Done Column -->
+				<div class="rounded-lg bg-green-50 p-4">
+					<h2 class="mb-4 text-lg font-bold text-green-700">Done</h2>
+					<div class="flex flex-col gap-4">
+						{#each doneTasks as task}
+							<TaskCard {task} onDelete={openDeleteModal} />
+						{/each}
+						{#if doneTasks.length === 0}
+							<p class="text-sm italic text-gray-500">No completed tasks</p>
+						{/if}
+					</div>
+				</div>
 			</div>
 		{:catch error}
 			<div class="rounded-lg bg-white p-6 shadow">

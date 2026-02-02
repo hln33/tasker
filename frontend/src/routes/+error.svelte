@@ -2,7 +2,8 @@
 	import { page } from '$app/state';
 	import { ERROR_MESSAGES } from '$lib/constants/errorMessages';
 
-	const errorMessage = ERROR_MESSAGES[page.status as keyof typeof ERROR_MESSAGES] || ERROR_MESSAGES.DEFAULT;
+	const errorMessage =
+		ERROR_MESSAGES[page.status as keyof typeof ERROR_MESSAGES] || ERROR_MESSAGES.DEFAULT;
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-gray-200 px-4">

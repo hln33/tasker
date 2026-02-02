@@ -49,21 +49,21 @@
 </script>
 
 {#if open}
-	<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-		<div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-			<div class="p-6 border-b border-gray-200">
+	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+		<div class="w-full max-w-md rounded-lg bg-white shadow-xl">
+			<div class="border-b border-gray-200 p-6">
 				<h2 class="text-2xl font-bold text-gray-900">Create New Task</h2>
 			</div>
 
-			<form onsubmit={handleSubmit} class="p-6 space-y-4">
+			<form onsubmit={handleSubmit} class="space-y-4 p-6">
 				{#if errorMessage}
-					<div class="bg-red-50 border border-red-200 rounded-lg p-4">
-						<p class="text-red-800 text-sm">{errorMessage}</p>
+					<div class="rounded-lg border border-red-200 bg-red-50 p-4">
+						<p class="text-sm text-red-800">{errorMessage}</p>
 					</div>
 				{/if}
 
 				<div>
-					<label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+					<label for="title" class="mb-1 block text-sm font-medium text-gray-700">
 						Title <span class="text-red-500">*</span>
 					</label>
 					<input
@@ -71,57 +71,52 @@
 						type="text"
 						bind:value={formData.title}
 						disabled={isSubmitting}
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
 						placeholder="Enter task title"
 						required
 					/>
 				</div>
 
 				<div>
-					<label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
+					<label for="description" class="mb-1 block text-sm font-medium text-gray-700">
+						Description
+					</label>
 					<textarea
 						id="description"
 						bind:value={formData.description}
 						disabled={isSubmitting}
 						rows="3"
-						class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
 						placeholder="Enter task description (optional)"
 					></textarea>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-
-            <label 
-              for="status" 
-              class="block text-sm font-medium text-gray-700 mb-1">
-                Status
-            </label>
+						<label for="status" class="mb-1 block text-sm font-medium text-gray-700">
+							Status
+						</label>
 						<select
 							id="status"
 							bind:value={formData.status}
 							disabled={isSubmitting}
-							class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
 						>
-						  <option value="TODO">TODO</option>
-              <option value="TODO">TODO</option>
+							<option value="TODO">TODO</option>
 							<option value="In Progress">In Progress</option>
-							<option value="Completed">Completed</option>
+							<option value="Done">Done</option>
 						</select>
 					</div>
 
 					<div>
-						<label for="priority" class="block text-sm font-medium text-gray-700 mb-1"
+						<label for="priority" class="mb-1 block text-sm font-medium text-gray-700"
 							>Priority</label
 						>
 						<select
 							id="priority"
 							bind:value={formData.priority}
 							disabled={isSubmitting}
-							class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
 						>
 							<option value="Low">Low</option>
 							<option value="Medium">Medium</option>
@@ -134,7 +129,7 @@
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-gray-400 cursor-pointer"
+						class="flex-1 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:bg-gray-400"
 					>
 						{isSubmitting ? 'Creating...' : 'Create Task'}
 					</button>
@@ -142,7 +137,7 @@
 						type="button"
 						onclick={handleClose}
 						disabled={isSubmitting}
-						class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium cursor-pointer"
+						class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
 					>
 						Cancel
 					</button>

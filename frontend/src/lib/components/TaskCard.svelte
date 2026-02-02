@@ -20,7 +20,7 @@
 		switch (status.toLowerCase()) {
 			case 'in progress':
 				return 'bg-blue-100 text-blue-800';
-			case 'completed':
+			case 'done':
 				return 'bg-green-100 text-green-800';
 			case 'todo':
 				return 'bg-gray-100 text-gray-800';
@@ -30,13 +30,14 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white shadow-lg">
-	<div class="border-b border-gray-200 p-6">
+<div class="rounded-lg bg-white shadow-lg *:px-4">
+	<div class="border-b border-gray-200 py-3">
 		<div class="flex items-start justify-between">
 			<div>
 				<span class="text-sm font-medium text-gray-500">{task.id}</span>
-				<h2 class="mt-1 text-2xl font-bold text-gray-900">{task.title}</h2>
+				<h2 class="mt-3 text-2xl font-bold text-gray-900">{task.title}</h2>
 			</div>
+
 			<div class="flex items-center gap-3">
 				<span class="rounded-full px-3 py-1 text-sm font-medium {getPriorityColor(task.priority)}">
 					{task.priority}
@@ -65,12 +66,16 @@
 		</div>
 	</div>
 
-	<div class="p-6">
-		<h3 class="mb-2 text-sm font-medium text-gray-500">Description</h3>
-		<p class="text-gray-700">{task.description}</p>
+	<div class="py-6">
+		<h3 class="mb-2 text-sm font-medium text-gray-500">Description:</h3>
+		{#if task.description === ''}
+			<p class="text-gray-400 italic">N/A</p>
+		{:else}
+			<p class="text-gray-700">{task.description}</p>
+		{/if}
 	</div>
 
-	<div class="rounded-b-lg p-6">
+	<div class="rounded-b-lg py-6">
 		<div class="flex items-center">
 			<span class="mr-2 text-sm text-gray-500">Status:</span>
 			<span class="rounded-full px-3 py-1 text-sm font-medium {getStatusColor(task.status)}">

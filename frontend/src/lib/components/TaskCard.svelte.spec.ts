@@ -120,11 +120,11 @@ describe('TaskCard.svelte', () => {
 		await expect.element(statusBadge).toHaveClass(/text-blue-800/);
 	});
 
-	it('should apply correct status color classes for Completed status', async () => {
-		const completedTask: Task = { ...mockTask, status: 'Completed' };
-		render(TaskCard, { task: completedTask, onDelete });
+	it('should apply correct status color classes for Done status', async () => {
+		const doneTask: Task = { ...mockTask, status: 'Done' };
+		render(TaskCard, { task: doneTask, onDelete });
 
-		const statusBadge = page.getByText('Completed');
+		const statusBadge = page.getByText('Done');
 		await expect.element(statusBadge).toHaveClass(/bg-green-100/);
 		await expect.element(statusBadge).toHaveClass(/text-green-800/);
 	});

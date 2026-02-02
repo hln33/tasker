@@ -55,7 +55,8 @@
 
 				<p class="text-gray-700">
 					Are you sure you want to delete the task
-					<span class="font-semibold text-gray-900">"{task?.title}"</span>? This action cannot be undone.
+					<span class="font-semibold text-gray-900">"{task?.title}"</span>? This action cannot be
+					undone.
 				</p>
 
 				<div class="flex gap-3 pt-4">

@@ -56,8 +56,8 @@ describe('DeleteTaskModal.svelte', () => {
 		const confirmationMessage = page.getByText(/Are you sure you want to delete the task/);
 		await expect.element(confirmationMessage).toBeInTheDocument();
 
-		// Check for the "cannot be undone" warning
-		const warningText = page.getByText(/This action cannot be undone/);
+		// Check for the "cannot be undone" warning (use regex that handles whitespace)
+		const warningText = page.getByText(/This action cannot be\s+undone/);
 		await expect.element(warningText).toBeInTheDocument();
 	});
 
