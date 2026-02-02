@@ -43,3 +43,55 @@ For every button element, ensure it has:
 - ❌ Using `cursor-default` on buttons
 - ❌ Missing hover states for better UX
 - ❌ Forgetting ARIA labels on icon buttons
+
+---
+
+## Git Commit Guidelines
+
+### Conventional Commits Standard
+
+All git commit messages **must** follow the [Conventional Commits] specification.
+
+#### Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Commit Types
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
+- **revert**: Reverts a previous commit
+
+#### Examples
+
+```
+feat: add error page component with playful messages
+fix: handle backend fetch errors gracefully
+test: add unit tests for error page component
+docs: update README with setup instructions
+refactor: extract error messages into constants
+style: format code with prettier
+chore: update dependencies
+```
+
+#### Important Rules
+
+- Use lowercase for type and description
+- Keep the description under 72 characters when possible
+- Use the imperative mood ("add" not "added" or "adds")
+- Do not end the description with a period
+- Add a scope (in parentheses) after the type for more context: `feat(button): add hover state`
+- Add a body for explaining **what** and **why** (not **how**) for complex changes
+- Reference issues in the footer: `Closes #123` or `Refs #456`
