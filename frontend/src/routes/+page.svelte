@@ -4,7 +4,7 @@
 	import { invalidate } from '$app/navigation';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
 	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
-	import TaskCard from '$lib/components/TaskCard.svelte';
+	import TaskColumn from '$lib/components/TaskColumn.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -12,10 +12,6 @@
 	let showDeleteModal = $state(false);
 	let taskToDelete = $state<Task | null>(null);
 	let successMessage = $state('');
-
-	$effect(() => {
-		console.log('Data updated:', data);
-	});
 
 	function openAddTaskModal() {
 		showAddTaskModal = true;
@@ -77,48 +73,30 @@
 				<p class="text-gray-700">Loading task...</p>
 			</div>
 		{:then tasks}
-			{@const todoTasks = tasks.filter(t => t.status === 'TODO')}
-			{@const inProgressTasks = tasks.filter(t => t.status === 'In Progress')}
-			{@const doneTasks = tasks.filter(t => t.status === 'Done')}
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-				<!-- TODO Column -->
-				<div class="rounded-lg bg-gray-50 p-4">
-					<h2 class="mb-4 text-lg font-bold text-gray-700">TODO</h2>
-					<div class="flex flex-col gap-4">
-						{#each todoTasks as task}
-							<TaskCard {task} onDelete={openDeleteModal} />
-						{/each}
-						{#if todoTasks.length === 0}
-							<p class="text-sm italic text-gray-500">No tasks to do</p>
-						{/if}
-					</div>
-				</div>
+				<TaskColumn
+					title="TODO"
+					tasks={tasks.filter((t) => t.status === 'TODO')}
+					color="gray"
+					emptyMessage="No tasks to do"
+					onDelete={openDeleteModal}
+				/>
 
-				<!-- In Progress Column -->
-				<div class="rounded-lg bg-blue-50 p-4">
-					<h2 class="mb-4 text-lg font-bold text-blue-700">In Progress</h2>
-					<div class="flex flex-col gap-4">
-						{#each inProgressTasks as task}
-							<TaskCard {task} onDelete={openDeleteModal} />
-						{/each}
-						{#if inProgressTasks.length === 0}
-							<p class="text-sm italic text-gray-500">No tasks in progress</p>
-						{/if}
-					</div>
-				</div>
+				<TaskColumn
+					title="In Progress"
+					tasks={tasks.filter((t) => t.status === 'In Progress')}
+					color="blue"
+					emptyMessage="No tasks in progress"
+					onDelete={openDeleteModal}
+				/>
 
-				<!-- Done Column -->
-				<div class="rounded-lg bg-green-50 p-4">
-					<h2 class="mb-4 text-lg font-bold text-green-700">Done</h2>
-					<div class="flex flex-col gap-4">
-						{#each doneTasks as task}
-							<TaskCard {task} onDelete={openDeleteModal} />
-						{/each}
-						{#if doneTasks.length === 0}
-							<p class="text-sm italic text-gray-500">No completed tasks</p>
-						{/if}
-					</div>
-				</div>
+				<TaskColumn
+					title="Done"
+					tasks={tasks.filter((t) => t.status === 'Done')}
+					color="green"
+					emptyMessage="No completed tasks"
+					onDelete={openDeleteModal}
+				/>
 			</div>
 		{:catch error}
 			<div class="rounded-lg bg-white p-6 shadow">
@@ -149,3 +127,12 @@
 		/>
 	</div>
 </div>
+
+<style>
+	/* Only for library-specific classes not covered by Tailwind utilities */
+	:global(.shadow-element) {
+		background: #e5e7eb !important;
+		border: 2px dashed #9ca3af !important;
+		opacity: 0.6;
+	}
+</style>

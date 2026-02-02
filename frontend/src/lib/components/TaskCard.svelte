@@ -30,7 +30,7 @@
 	};
 </script>
 
-<div class="rounded-lg bg-white shadow-lg *:px-4">
+<div class="cursor-grab rounded-lg bg-white shadow-md *:px-4 transition-shadow hover:shadow-sm active:cursor-grabbing">
 	<div class="border-b border-gray-200 py-3">
 		<div class="flex items-start justify-between">
 			<div>
