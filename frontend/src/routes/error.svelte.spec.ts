@@ -39,7 +39,7 @@ async function setupMockPage(status: number, message: string) {
 }
 
 describe('/+error.svelte', () => {
-	it('should render 500 error with playful message', async () => {
+	it('should render 500 error with message', async () => {
 		await setupMockPage(500, 'Internal Server Error');
 		render(ErrorPage);
 
@@ -55,7 +55,7 @@ describe('/+error.svelte', () => {
 		await expect.element(errorDetail).toBeInTheDocument();
 	});
 
-	it('should render 502 error with playful message', async () => {
+	it('should render 502 error with message', async () => {
 		await setupMockPage(502, 'Bad Gateway');
 		render(ErrorPage);
 
@@ -68,7 +68,7 @@ describe('/+error.svelte', () => {
 		await expect.element(errorMessage).toBeInTheDocument();
 	});
 
-	it('should render 503 error with playful message', async () => {
+	it('should render 503 error with message', async () => {
 		await setupMockPage(503, 'Service Unavailable');
 		render(ErrorPage);
 
@@ -81,7 +81,7 @@ describe('/+error.svelte', () => {
 		await expect.element(errorMessage).toBeInTheDocument();
 	});
 
-	it('should render 504 error with playful message', async () => {
+	it('should render 504 error with message', async () => {
 		await setupMockPage(504, 'Gateway Timeout');
 		render(ErrorPage);
 
@@ -94,7 +94,7 @@ describe('/+error.svelte', () => {
 		await expect.element(errorMessage).toBeInTheDocument();
 	});
 
-	it('should render default playful message for unknown status code', async () => {
+	it('should render default message for unknown status code', async () => {
 		await setupMockPage(418, "I'm a teapot");
 		render(ErrorPage);
 
