@@ -71,6 +71,36 @@ func (m *MockTaskRepository) DeleteTask(id string) error {
 	return nil
 }
 
+func (m *MockTaskRepository) UpdateTask(id string, t task.Task) (*task.Task, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	existing, exists := m.tasks[id]
+	if !exists {
+		return nil, errors.New("task not found: " + id)
+	}
+
+	// Update only non-empty fields (except Status/Priority which can be empty)
+	if t.Title != "" {
+		existing.Title = t.Title
+	}
+	if t.Description != "" {
+		existing.Description = t.Description
+	}
+	if t.Status != "" {
+		existing.Status = t.Status
+	}
+	if t.Priority != "" {
+		existing.Priority = t.Priority
+	}
+
+	// Update timestamp
+	existing.UpdatedAt = time.Now()
+
+	m.tasks[id] = existing
+	return &existing, nil
+}
+
 func (m *MockTaskRepository) Clear() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -95,6 +125,7 @@ func setupTestRouter() *gin.Engine {
 
 	r.GET("/api/task", GetTaskHandler)
 	r.POST("/api/task", PostTaskHandler)
+	r.PUT("/api/task/:id", PutTaskHandler)
 	r.DELETE("/api/task/:id", DeleteTaskHandler)
 
 	return r

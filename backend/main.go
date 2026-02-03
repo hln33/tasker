@@ -33,7 +33,7 @@ func main() {
 	// Connect to database with retry logic for containerized environments
 	var db *sqlx.DB
 	var err error
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		db, err = database.Connect(cfg.DatabaseURL())
 		if err == nil {
 			break
@@ -109,6 +109,7 @@ func setupRouter() *gin.Engine {
 	r.GET("/", healthCheckHandler)
 	r.GET("/api/task", handlers.GetTaskHandler)
 	r.POST("/api/task", handlers.PostTaskHandler)
+	r.PUT("/api/task/:id", handlers.PutTaskHandler)
 	r.DELETE("/api/task/:id", handlers.DeleteTaskHandler)
 
 	return r

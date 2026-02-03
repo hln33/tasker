@@ -15,6 +15,7 @@ type TaskRepositoryInterface interface {
 	GetAllTasks() ([]task.Task, error)
 	GetTaskByID(id string) (*task.Task, error)
 	CreateTask(t task.Task) (*task.Task, error)
+	UpdateTask(id string, t task.Task) (*task.Task, error)
 	DeleteTask(id string) error
 }
 
@@ -103,4 +104,42 @@ func (r *TaskRepository) DeleteTask(id string) error {
 	}
 
 	return nil
+}
+
+func (r *TaskRepository) UpdateTask(id string, t task.Task) (*task.Task, error) {
+	t.UpdatedAt = time.Now()
+
+	query := `
+		UPDATE tasks
+		SET title = COALESCE(NULLIF($1, ''), title),
+		    description = COALESCE(NULLIF($2, ''), description),
+		    status = $3,
+		    priority = $4,
+		    updated_at = $5
+		WHERE id = $6
+		RETURNING id, title, description, status, priority, created_at, updated_at
+	`
+
+	var updatedTask task.Task
+	err := r.db.QueryRow(
+		query,
+		t.Title, t.Description, t.Status, t.Priority, t.UpdatedAt, id,
+	).Scan(
+		&updatedTask.ID,
+		&updatedTask.Title,
+		&updatedTask.Description,
+		&updatedTask.Status,
+		&updatedTask.Priority,
+		&updatedTask.CreatedAt,
+		&updatedTask.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("task not found: %s", id)
+		}
+		return nil, fmt.Errorf("failed to update task: %w", err)
+	}
+
+	return &updatedTask, nil
 }
