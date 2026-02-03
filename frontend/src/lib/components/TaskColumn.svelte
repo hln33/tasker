@@ -2,6 +2,13 @@
 	import type { Task } from '$lib/types';
 	import { dndzone } from 'svelte-dnd-action';
 	import TaskCard from './TaskCard.svelte';
+	import Checkmark from '$lib/icons/Checkmark.svelte';
+	import Pencil from '$lib/icons/Pencil.svelte';
+	import FastForward from '$lib/icons/FastForward.svelte';
+
+	const TODO = 'TODO';
+	const IN_PROGRESS = 'In Progress';
+	const DONE = 'Done';
 
 	let {
 		type,
@@ -9,26 +16,26 @@
 		emptyMessage,
 		onDelete
 	}: {
-		type: 'TODO' | 'In Progress' | 'Done';
+		type: typeof TODO | typeof IN_PROGRESS | typeof DONE;
 		tasks: Task[];
 		emptyMessage: string;
 		onDelete: (task: Task) => void;
 	} = $props();
 
 	const colorClasses = {
-		TODO: {
+		[TODO]: {
 			bg: 'bg-gray-50',
 			text: 'text-gray-700',
 			outline: 'rgba(107, 114, 128, 0.5)',
 			background: 'rgba(107, 114, 128, 0.1)'
 		},
-		'In Progress': {
+		[IN_PROGRESS]: {
 			bg: 'bg-blue-50',
 			text: 'text-blue-700',
 			outline: 'rgba(59, 130, 246, 0.5)',
 			background: 'rgba(59, 130, 246, 0.1)'
 		},
-		Done: {
+		[DONE]: {
 			bg: 'bg-green-50',
 			text: 'text-green-700',
 			outline: 'rgba(34, 197, 94, 0.5)',
@@ -66,7 +73,16 @@
 </script>
 
 <div class="h-fit min-h-96 {currentColor().bg} rounded-lg p-4 shadow-md">
-	<h2 class="mb-4 text-lg font-bold {currentColor().text}">{type}</h2>
+	<div class="mb-4 flex items-center gap-2">
+		<h2 class="text-lg font-bold {currentColor().text}">{type}</h2>
+		{#if type === TODO}
+			<Checkmark class={currentColor().text} />
+		{:else if type === IN_PROGRESS}
+			<FastForward class="{currentColor().text} size-5" />
+		{:else if type === DONE}
+			<Pencil class="{currentColor().text} size-5" />
+		{/if}
+	</div>
 
 	<section
 		use:dndzone={{
