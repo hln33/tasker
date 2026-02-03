@@ -39,9 +39,8 @@ describe('TaskColumn', () => {
 	describe('Component rendering', () => {
 		it('renders column with tasks', () => {
 			const col = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: todoTasks,
-				color: 'gray',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
@@ -53,9 +52,8 @@ describe('TaskColumn', () => {
 
 		it('renders empty message when no tasks', () => {
 			const col = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: [],
-				color: 'gray',
 				emptyMessage: 'No tasks to do',
 				onDelete: mockDelete
 			});
@@ -65,9 +63,8 @@ describe('TaskColumn', () => {
 
 		it('has drop zone section element', () => {
 			const col = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: todoTasks,
-				color: 'gray',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
@@ -82,9 +79,8 @@ describe('TaskColumn', () => {
 			const deleteCallback = vi.fn();
 
 			const col = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: todoTasks,
-				color: 'gray',
 				emptyMessage: 'No tasks',
 				onDelete: deleteCallback
 			});
@@ -98,9 +94,8 @@ describe('TaskColumn', () => {
 	describe('Color variations', () => {
 		it('renders with gray color', () => {
 			const col = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: todoTasks,
-				color: 'gray',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
@@ -110,9 +105,8 @@ describe('TaskColumn', () => {
 
 		it('renders with blue color', () => {
 			const col = render(TaskColumn, {
-				title: 'In Progress',
+				type: 'In Progress',
 				tasks: inProgressTasks,
-				color: 'blue',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
@@ -122,9 +116,8 @@ describe('TaskColumn', () => {
 
 		it('renders with green color', () => {
 			const col = render(TaskColumn, {
-				title: 'Done',
+				type: 'Done',
 				tasks: todoTasks,
-				color: 'green',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
@@ -136,23 +129,20 @@ describe('TaskColumn', () => {
 	describe('Multiple columns integration', () => {
 		it('renders multiple columns independently', () => {
 			const todoCol = render(TaskColumn, {
-				title: 'TODO',
+				type: 'TODO',
 				tasks: todoTasks,
-				color: 'gray',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
 			const inProgressCol = render(TaskColumn, {
-				title: 'In Progress',
+				type: 'In Progress',
 				tasks: inProgressTasks,
-				color: 'blue',
 				emptyMessage: 'No tasks',
 				onDelete: mockDelete
 			});
 			const doneCol = render(TaskColumn, {
-				title: 'Done',
+				type: 'Done',
 				tasks: [],
-				color: 'green',
 				emptyMessage: 'No completed tasks',
 				onDelete: mockDelete
 			});

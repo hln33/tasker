@@ -4,33 +4,31 @@
 	import TaskCard from './TaskCard.svelte';
 
 	let {
-		title,
+		type,
 		tasks,
-		color,
 		emptyMessage,
 		onDelete
 	}: {
-		title: string;
+		type: 'TODO' | 'In Progress' | 'Done';
 		tasks: Task[];
-		color: 'gray' | 'blue' | 'green';
 		emptyMessage: string;
 		onDelete: (task: Task) => void;
 	} = $props();
 
 	const colorClasses = {
-		gray: {
+		TODO: {
 			bg: 'bg-gray-50',
 			text: 'text-gray-700',
 			outline: 'rgba(107, 114, 128, 0.5)',
 			background: 'rgba(107, 114, 128, 0.1)'
 		},
-		blue: {
+		'In Progress': {
 			bg: 'bg-blue-50',
 			text: 'text-blue-700',
 			outline: 'rgba(59, 130, 246, 0.5)',
 			background: 'rgba(59, 130, 246, 0.1)'
 		},
-		green: {
+		Done: {
 			bg: 'bg-green-50',
 			text: 'text-green-700',
 			outline: 'rgba(34, 197, 94, 0.5)',
@@ -38,7 +36,7 @@
 		}
 	};
 
-	const currentColor = $derived(() => colorClasses[color]);
+	const currentColor = $derived(() => colorClasses[type]);
 
 	const handleDndConsider = (e: CustomEvent) => {
 		tasks = e.detail.items;
@@ -67,8 +65,8 @@
 	};
 </script>
 
-<div class="{currentColor().bg} rounded-lg p-4 shadow-md">
-	<h2 class="mb-4 text-lg font-bold {currentColor().text}">{title}</h2>
+<div class="h-fit min-h-96 {currentColor().bg} rounded-lg p-4 shadow-md">
+	<h2 class="mb-4 text-lg font-bold {currentColor().text}">{type}</h2>
 
 	<section
 		use:dndzone={{

@@ -75,25 +75,22 @@
 		{:then tasks}
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<TaskColumn
-					title="TODO"
+					type="TODO"
 					tasks={tasks.filter((t) => t.status === 'TODO')}
-					color="gray"
 					emptyMessage="No tasks to do"
 					onDelete={openDeleteModal}
 				/>
 
 				<TaskColumn
-					title="In Progress"
+					type="In Progress"
 					tasks={tasks.filter((t) => t.status === 'In Progress')}
-					color="blue"
 					emptyMessage="No tasks in progress"
 					onDelete={openDeleteModal}
 				/>
 
 				<TaskColumn
-					title="Done"
+					type="Done"
 					tasks={tasks.filter((t) => t.status === 'Done')}
-					color="green"
 					emptyMessage="No completed tasks"
 					onDelete={openDeleteModal}
 				/>
