@@ -82,7 +82,7 @@
 		}}
 		onconsider={(e) => handleDndConsider(e)}
 		onfinalize={(e) => handleDndFinalize(e)}
-		class=" flex min-h-52 flex-col gap-4 rounded-lg p-2 transition-all duration-200"
+		class="flex min-h-52 flex-col gap-4 rounded-lg p-2 transition-all duration-100 ease-in-out"
 	>
 		{#each tasks as task (task.id)}
 			<TaskCard {task} {onDelete} />

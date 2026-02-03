@@ -5,11 +5,13 @@
 	let {
 		open = false,
 		task,
-		onClose
+		onClose,
+		onDeleteSuccess
 	}: {
 		open: boolean;
 		task: Task | null;
 		onClose: () => void;
+		onDeleteSuccess: () => void;
 	} = $props();
 
 	let isDeleting = $state(false);
@@ -23,10 +25,11 @@
 
 		try {
 			await deleteTask(task.id);
-			onClose();
-		} catch (error) {
-			errorMessage = error instanceof Error ? error.message : 'Failed to delete task';
+			onDeleteSuccess();
+		} catch (e) {
+			errorMessage = e instanceof Error ? e.message : 'Failed to delete task';
 		} finally {
+			onClose();
 			isDeleting = false;
 		}
 	}

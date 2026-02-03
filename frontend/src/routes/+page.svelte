@@ -120,10 +120,8 @@
 		<DeleteTaskModal
 			open={showDeleteModal}
 			task={taskToDelete}
-			onClose={() => {
-				closeDeleteModal();
-				handleTaskDeleted();
-			}}
+			onClose={closeDeleteModal}
+      onDeleteSuccess={handleTaskDeleted}
 		/>
 	</div>
 </div>
