@@ -76,11 +76,11 @@
 	<div class="mb-4 flex items-center gap-2">
 		<h2 class="text-lg font-bold {currentColor().text}">{type}</h2>
 		{#if type === TODO}
-			<Checkmark class={currentColor().text} />
+			<Pencil class="{currentColor().text} size-5" />
 		{:else if type === IN_PROGRESS}
 			<FastForward class="{currentColor().text} size-5" />
 		{:else if type === DONE}
-			<Pencil class="{currentColor().text} size-5" />
+			<Checkmark class={currentColor().text}/>
 		{/if}
 	</div>
 
