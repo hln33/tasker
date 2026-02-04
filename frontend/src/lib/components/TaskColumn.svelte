@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Task } from '$lib/types';
 	import { dndzone } from 'svelte-dnd-action';
+	import { updateTaskStatus } from '$lib/api';
 	import TaskCard from './TaskCard.svelte';
 	import Checkmark from '$lib/icons/Checkmark.svelte';
 	import Pencil from '$lib/icons/Pencil.svelte';
@@ -47,27 +48,18 @@
 
 	const handleDndConsider = (e: CustomEvent) => {
 		tasks = e.detail.items;
-
-		const info = e.detail.info;
-		if (info.trigger === 'DROPPED_INTO_ANOTHER' || info.trigger === 'DROPPED_INTO_ZONE') {
-			console.log('Task moved to Done - Status update stub:', {
-				taskId: info.id,
-				newStatus: 'Done',
-				sourceColumn: info.source
-			});
-		}
 	};
 
-	const handleDndFinalize = (e: CustomEvent) => {
+	const handleDndFinalize = async (e: CustomEvent) => {
 		tasks = e.detail.items;
 
 		const info = e.detail.info;
-		if (info.trigger === 'DROPPED_INTO_ANOTHER' || info.trigger === 'DROPPED_INTO_ZONE') {
-			console.log('Task moved to Done - Status update stub:', {
-				taskId: info.id,
-				newStatus: 'Done',
-				sourceColumn: info.source
-			});
+		if (info.trigger === 'droppedIntoZone') {
+			try {
+				await updateTaskStatus(info.id, type);
+			} catch (error) {
+				console.error('Failed to update task status:', error);
+			}
 		}
 	};
 </script>
