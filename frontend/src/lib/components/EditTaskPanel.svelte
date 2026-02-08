@@ -85,7 +85,7 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		class="bg-opacity-50 fixed inset-0 z-50 flex justify-end bg-black p-4"
+		class="fixed inset-0 z-50 flex justify-end bg-black/80 p-4"
 	>
 		<div
 			class="w-full max-w-lg bg-white shadow-xl transition-transform duration-300 ease-in-out"

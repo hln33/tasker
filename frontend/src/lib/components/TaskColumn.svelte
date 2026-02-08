@@ -66,7 +66,7 @@
 	};
 </script>
 
-<div class=" {currentColor().bg} rounded-lg p-4 shadow-md">
+<div class="max-h-fit {currentColor().bg} rounded-lg p-4 shadow-md">
   <div class="mb-4 flex items-center gap-2">
     {#if type === TODO}
     <Pencil class="{currentColor().text} size-5" />
@@ -90,7 +90,7 @@
 		}}
 		onconsider={(e) => handleDndConsider(e)}
 		onfinalize={(e) => handleDndFinalize(e)}
-		class="flex max-h-256 min-h-90 flex-col gap-4 overflow-y-auto rounded-lg p-2 transition-all duration-100 ease-in-out"
+		class="flex max-h-256 min-h-64 flex-col gap-4 overflow-y-auto rounded-lg p-2 transition-all duration-100 ease-in-out"
 	>
 		{#each tasks as task (task.id)}
 			<TaskCard {task} {onDelete} {onEdit} />

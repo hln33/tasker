@@ -49,7 +49,7 @@
 </script>
 
 {#if open}
-	<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
 		<div class="w-full max-w-md rounded-lg bg-white shadow-xl">
 			<div class="border-b border-gray-200 p-6">
 				<h2 class="text-2xl font-bold text-gray-900">Create New Task</h2>
