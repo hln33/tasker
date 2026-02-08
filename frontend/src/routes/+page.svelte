@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageProps } from './$types';
 	import type { Task } from '$lib/types';
-	import { invalidate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
 	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
 	import EditTaskPanel from '$lib/components/EditTaskPanel.svelte';
 	import TaskColumn from '$lib/components/TaskColumn.svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data }: PageProps = $props();
 
 	let showAddTaskModal = $state(false);
 	let showDeleteModal = $state(false);
@@ -25,8 +25,7 @@
 		showAddTaskModal = false;
 	}
 
-	async function handleTaskCreated() {
-		await invalidate('http://localhost:8080/api/task');
+	function handleTaskCreated() {
 		successMessage = 'Task created successfully!';
 		setTimeout(() => {
 			successMessage = '';
@@ -45,7 +44,7 @@
 	}
 
 	async function handleTaskDeleted() {
-		await invalidate('http://localhost:8080/api/task');
+		await invalidateAll();
 		successMessage = 'Task deleted successfully!';
 		setTimeout(() => {
 			successMessage = '';
@@ -63,7 +62,7 @@
 	}
 
 	async function handleTaskEdited() {
-		await invalidate('http://localhost:8080/api/task');
+		await invalidateAll();
 		successMessage = 'Task updated successfully!';
 		setTimeout(() => {
 			successMessage = '';
@@ -98,7 +97,7 @@
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 				<TaskColumn
 					type="TODO"
-					tasks={tasks.filter((t) => t.status === 'TODO')}
+					tasks={tasks.filter((t: Task) => t.status === 'TODO')}
 					emptyMessage="No tasks to do"
 					onDelete={openDeleteModal}
 					onEdit={openEditPanel}
@@ -106,7 +105,7 @@
 
 				<TaskColumn
 					type="In Progress"
-					tasks={tasks.filter((t) => t.status === 'In Progress')}
+					tasks={tasks.filter((t: Task) => t.status === 'In Progress')}
 					emptyMessage="No tasks in progress"
 					onDelete={openDeleteModal}
 					onEdit={openEditPanel}
@@ -114,7 +113,7 @@
 
 				<TaskColumn
 					type="Done"
-					tasks={tasks.filter((t) => t.status === 'Done')}
+					tasks={tasks.filter((t: Task) => t.status === 'Done')}
 					emptyMessage="No completed tasks"
 					onDelete={openDeleteModal}
 					onEdit={openEditPanel}

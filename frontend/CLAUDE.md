@@ -44,6 +44,70 @@ For every button element, ensure it has:
 - ❌ Missing hover states for better UX
 - ❌ Forgetting ARIA labels on icon buttons
 
+### TypeScript Best Practices
+
+#### Type Safety Requirements
+
+**AVOID `any` AT ALL TIMES**
+
+The `any` type completely disables TypeScript's type checking and defeats the purpose of using TypeScript. Always use proper types.
+
+#### Preferred Alternatives to `any`
+
+| Instead of `any` | Use | Example |
+|------------------|-----|---------|
+| `any` | `unknown` | When type is truly unknown (requires type narrowing) |
+| `any` | Specific type | `string`, `number`, `Task`, etc. |
+| `any` | Union type | `string \| number` |
+| `any` | Generic type | `Array<T>`, `Record<K, V>` |
+| `any` | Type assertion | Only when absolutely necessary, with `as Type` |
+
+#### Examples
+
+**❌ BAD - Using `any`:**
+```typescript
+function process(data: any) {
+  return data.value; // No type safety
+}
+
+const form: any = { title: '' };
+```
+
+**✅ GOOD - Proper types:**
+```typescript
+function process(data: { value: string }) {
+  return data.value; // Type-safe
+}
+
+interface FormData {
+  title: string;
+  description?: string;
+}
+
+const form: FormData = { title: '' };
+```
+
+**✅ GOOD - Using `unknown` for truly unknown data:**
+```typescript
+function parseJSON(json: string): unknown {
+  return JSON.parse(json);
+}
+
+const data = parseJSON('{"key": "value"}');
+
+// Type narrowing required before use
+if (typeof data === 'object' && data !== null && 'key' in data) {
+  console.log((data as { key: string }).key);
+}
+```
+
+#### Common Mistakes to Avoid
+- ❌ Using `any` to "fix" type errors
+- ❌ Using `any` for function parameters
+- ❌ Using `any` for API response data
+- ❌ Using type assertions with `any` (`as any`)
+- ❌ Suppressing type errors instead of fixing types properly
+
 ---
 
 ## Git Commit Guidelines

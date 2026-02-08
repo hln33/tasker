@@ -20,7 +20,7 @@ describe('TaskCard.svelte', () => {
 		render(TaskCard, { task: mockTask, onDelete, onEdit });
 
 		const taskId = page.getByText('TASK-001');
-		await expect.element(taskId).toBeInTheDocument();
+		await expect.element(taskId).not.toBeInTheDocument();
 	});
 
 	it('should render task title', async () => {

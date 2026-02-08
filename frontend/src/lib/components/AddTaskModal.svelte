@@ -1,55 +1,20 @@
 <script lang="ts">
-	import { createTask } from '$lib/api';
-	import type { CreateTaskInput } from '$lib/types';
+	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
+	import type { ActionResult } from '@sveltejs/kit';
 
 	let {
 		open = false,
 		onClose,
-		onAddSuccess
-	}: { open: boolean; onClose: () => void; onAddSuccess: () => void } = $props();
-
-	let isSubmitting = $state(false);
-	let errorMessage = $state('');
-	let formData = $state<CreateTaskInput>({
-		title: '',
-		description: '',
-		status: 'TODO',
-		priority: 'Medium'
-	});
+		onAddSuccess,
+	}: {
+		open: boolean;
+		onClose: () => void;
+		onAddSuccess: () => void;
+	} = $props();
 
 	function handleClose() {
-		if (!isSubmitting) {
-			onClose();
-			resetForm();
-		}
-	}
-
-	function resetForm() {
-		formData = { title: '', description: '', status: 'TODO', priority: 'Medium' };
-		errorMessage = '';
-	}
-
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-
-		if (!formData.title.trim()) {
-			errorMessage = 'Title is required';
-			return;
-		}
-
-		isSubmitting = true;
-		errorMessage = '';
-
-		try {
-			await createTask(formData);
-			resetForm();
-			onAddSuccess();
-      onClose();
-		} catch (error) {
-			errorMessage = error instanceof Error ? error.message : 'Failed to create task';
-		} finally {
-			isSubmitting = false;
-		}
+		onClose();
 	}
 </script>
 
@@ -60,10 +25,23 @@
 				<h2 class="text-2xl font-bold text-gray-900">Create New Task</h2>
 			</div>
 
-			<form onsubmit={handleSubmit} class="space-y-4 p-6">
-				{#if errorMessage}
+			<form
+				method="POST"
+				action="?/createTask"
+				use:enhance={() => {
+					return async ({ result, update }) => {
+            if (result.type === 'success') {
+              onAddSuccess();
+              onClose();
+            }
+            await update();
+					};
+				}}
+				class="space-y-4 p-6"
+			>
+				{#if page.form?.error}
 					<div class="rounded-lg border border-red-200 bg-red-50 p-4">
-						<p class="text-sm text-red-800">{errorMessage}</p>
+						<p class="text-sm text-red-800">{page.form.error}</p>
 					</div>
 				{/if}
 
@@ -73,10 +51,10 @@
 					</label>
 					<input
 						id="title"
+						name="title"
 						type="text"
-						bind:value={formData.title}
-						disabled={isSubmitting}
-						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+						value={page.form?.title ?? ''}
+						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
 						placeholder="Enter task title"
 						required
 					/>
@@ -88,12 +66,13 @@
 					</label>
 					<textarea
 						id="description"
-						bind:value={formData.description}
-						disabled={isSubmitting}
+						name="description"
 						rows="3"
-						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+						class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
 						placeholder="Enter task description (optional)"
-					></textarea>
+					>
+						{page.form?.description ?? ''}
+					</textarea>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
@@ -103,13 +82,14 @@
 						</label>
 						<select
 							id="status"
-							bind:value={formData.status}
-							disabled={isSubmitting}
-							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+							name="status"
+							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
 						>
-							<option value="TODO">TODO</option>
-							<option value="In Progress">In Progress</option>
-							<option value="Done">Done</option>
+							<option value="TODO" selected={page.form?.status === 'TODO' || !page.form?.status}>TODO</option>
+							<option value="In Progress" selected={page.form?.status === 'In Progress'}
+								>In Progress</option
+							>
+							<option value="Done" selected={page.form?.status === 'Done'}>Done</option>
 						</select>
 					</div>
 
@@ -119,13 +99,14 @@
 						>
 						<select
 							id="priority"
-							bind:value={formData.priority}
-							disabled={isSubmitting}
-							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+							name="priority"
+							class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
 						>
-							<option value="Low">Low</option>
-							<option value="Medium">Medium</option>
-							<option value="High">High</option>
+							<option value="Low" selected={page.form?.priority === 'Low'}>Low</option>
+							<option value="Medium" selected={page.form?.priority === 'Medium' || !page.form?.priority}
+								>Medium</option
+							>
+							<option value="High" selected={page.form?.priority === 'High'}>High</option>
 						</select>
 					</div>
 				</div>
@@ -133,15 +114,13 @@
 				<div class="flex gap-3 pt-4">
 					<button
 						type="submit"
-						disabled={isSubmitting}
-						class="flex-1 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:bg-gray-400"
+						class="flex-1 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
 					>
-						{isSubmitting ? 'Creating...' : 'Create Task'}
+						Create Task
 					</button>
 					<button
 						type="button"
 						onclick={handleClose}
-						disabled={isSubmitting}
 						class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
 					>
 						Cancel
