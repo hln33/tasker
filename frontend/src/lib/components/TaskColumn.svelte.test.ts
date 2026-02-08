@@ -31,6 +31,7 @@ describe('TaskColumn', () => {
 	];
 
 	const mockDelete = vi.fn();
+	const mockEdit = vi.fn();
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -42,7 +43,8 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(col.getByRole('heading', { name: 'TODO' })).toBeInTheDocument();
@@ -55,7 +57,8 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: [],
 				emptyMessage: 'No tasks to do',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(col.getByText('No tasks to do')).toBeInTheDocument();
@@ -66,7 +69,8 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			const dropZone = col.container.querySelector('section');
@@ -82,7 +86,8 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: deleteCallback
+				onDelete: deleteCallback,
+				onEdit: mockEdit
 			});
 
 			// Verify the delete button is present (delegation is working)
@@ -97,7 +102,8 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(col.getByRole('heading', { name: 'TODO' })).toBeInTheDocument();
@@ -108,7 +114,8 @@ describe('TaskColumn', () => {
 				type: 'In Progress',
 				tasks: inProgressTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(col.getByRole('heading', { name: 'In Progress' })).toBeInTheDocument();
@@ -119,7 +126,8 @@ describe('TaskColumn', () => {
 				type: 'Done',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(col.getByRole('heading', { name: 'Done' })).toBeInTheDocument();
@@ -132,19 +140,22 @@ describe('TaskColumn', () => {
 				type: 'TODO',
 				tasks: todoTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 			const inProgressCol = render(TaskColumn, {
 				type: 'In Progress',
 				tasks: inProgressTasks,
 				emptyMessage: 'No tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 			const doneCol = render(TaskColumn, {
 				type: 'Done',
 				tasks: [],
 				emptyMessage: 'No completed tasks',
-				onDelete: mockDelete
+				onDelete: mockDelete,
+				onEdit: mockEdit
 			});
 
 			expect(todoCol.getByText('Buy groceries')).toBeInTheDocument();

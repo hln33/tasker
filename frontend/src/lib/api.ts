@@ -42,3 +42,18 @@ export async function updateTaskStatus(taskId: string, status: string): Promise<
 
 	return res.json();
 }
+
+export async function updateTask(taskId: string, taskData: Partial<CreateTaskInput>): Promise<Task> {
+	const res = await fetch(`${API_BASE_URL}/task/${taskId}`, {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(taskData)
+	});
+
+	if (!res.ok) {
+		const err = await res.json().catch(() => ({ message: 'Unknown error' }));
+		throw new Error(err.message || 'Failed to update task');
+	}
+
+	return res.json();
+}

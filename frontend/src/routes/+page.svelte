@@ -4,6 +4,7 @@
 	import { invalidate } from '$app/navigation';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
 	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
+	import EditTaskPanel from '$lib/components/EditTaskPanel.svelte';
 	import TaskColumn from '$lib/components/TaskColumn.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -11,6 +12,8 @@
 	let showAddTaskModal = $state(false);
 	let showDeleteModal = $state(false);
 	let taskToDelete = $state<Task | null>(null);
+	let taskToEdit = $state<Task | null>(null);
+	let isEditPanelOpen = $state(false);
 	let successMessage = $state('');
 
 	function openAddTaskModal() {
@@ -48,6 +51,25 @@
 			successMessage = '';
 		}, 3000);
 	}
+
+	function openEditPanel(task: Task) {
+		taskToEdit = task;
+		isEditPanelOpen = true;
+	}
+
+	function closeEditPanel() {
+		taskToEdit = null;
+		isEditPanelOpen = false;
+	}
+
+	async function handleTaskEdited() {
+		await invalidate('http://localhost:8080/api/task');
+		successMessage = 'Task updated successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+		closeEditPanel();
+	}
 </script>
 
 <div class="min-h-screen bg-gray-200 px-4 py-12">
@@ -79,6 +101,7 @@
 					tasks={tasks.filter((t) => t.status === 'TODO')}
 					emptyMessage="No tasks to do"
 					onDelete={openDeleteModal}
+					onEdit={openEditPanel}
 				/>
 
 				<TaskColumn
@@ -86,6 +109,7 @@
 					tasks={tasks.filter((t) => t.status === 'In Progress')}
 					emptyMessage="No tasks in progress"
 					onDelete={openDeleteModal}
+					onEdit={openEditPanel}
 				/>
 
 				<TaskColumn
@@ -93,6 +117,7 @@
 					tasks={tasks.filter((t) => t.status === 'Done')}
 					emptyMessage="No completed tasks"
 					onDelete={openDeleteModal}
+					onEdit={openEditPanel}
 				/>
 			</div>
 		{:catch error}
@@ -119,6 +144,12 @@
 			task={taskToDelete}
 			onClose={closeDeleteModal}
       onDeleteSuccess={handleTaskDeleted}
+		/>
+		<EditTaskPanel
+			open={isEditPanelOpen}
+			task={taskToEdit}
+			onClose={closeEditPanel}
+			onEditSuccess={handleTaskEdited}
 		/>
 	</div>
 </div>

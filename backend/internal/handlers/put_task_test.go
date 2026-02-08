@@ -339,3 +339,45 @@ func TestPutTaskHandler_EmptyID(t *testing.T) {
 
 	assert.Equal(t, http.StatusNotFound, putW.Code)
 }
+
+// TestPutTaskHandler_OmittedFieldsPreserveExistingValues tests that when a field
+// is omitted from the update request (resulting in empty string after JSON binding),
+// the existing database value is preserved. This prevents tasks from disappearing
+// when partial updates are sent.
+func TestPutTaskHandler_OmittedFieldsPreserveExistingValues(t *testing.T) {
+	setupTest()
+	defer tearDownTest()
+
+	r := setupTestRouter()
+
+	// Create a task with all fields populated
+	jsonBody := marshalTaskBody("Original Title", "Original Description", "In Progress", "Medium")
+	postW := makePostRequest(r, jsonBody)
+
+	var createdTask task.Task
+	json.Unmarshal(postW.Body.Bytes(), &createdTask)
+
+	// Send a partial update with only some fields (others will be empty strings after binding)
+	partialUpdate := map[string]string{
+		"title":       "Updated Title",
+		"description": "Updated Description",
+		"priority":    "High",
+		// Note: "status" field is intentionally omitted
+	}
+	payloadBytes, _ := json.Marshal(partialUpdate)
+
+	putW := makePutRequest(r, createdTask.ID, payloadBytes)
+
+	assert.Equal(t, http.StatusOK, putW.Code)
+
+	var response task.Task
+	json.Unmarshal(putW.Body.Bytes(), &response)
+
+	// Verify sent fields were updated
+	assert.Equal(t, "Updated Title", response.Title)
+	assert.Equal(t, "Updated Description", response.Description)
+	assert.Equal(t, "High", response.Priority)
+
+	// CRITICAL: Verify omitted field was preserved (not overwritten to empty string)
+	assert.Equal(t, "In Progress", response.Status, "omitted fields must preserve existing database values")
+}

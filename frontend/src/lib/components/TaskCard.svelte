@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { Task } from '$lib/types';
+	import Pencil from '$lib/icons/Pencil.svelte';
 
-	let { task, onDelete }: { task: Task; onDelete: (task: Task) => void } = $props();
+	let {
+		task,
+		onDelete,
+		onEdit
+	}: { task: Task; onDelete: (task: Task) => void; onEdit: (task: Task) => void } = $props();
 
 	const getPriorityColor = (priority: string) => {
 		switch (priority.toLowerCase()) {
@@ -44,6 +49,13 @@
 				<span class="rounded-full px-3 py-1 text-sm font-medium {getPriorityColor(task.priority)}">
 					{task.priority}
 				</span>
+				<button
+					onclick={() => onEdit(task)}
+					class="cursor-pointer rounded-lg p-2 text-blue-600 transition-colors hover:bg-blue-200"
+					aria-label="Edit task"
+				>
+					<Pencil class="size-5" />
+				</button>
 				<button
 					onclick={() => onDelete(task)}
 					class="cursor-pointer rounded-lg p-2 text-red-600 transition-colors hover:bg-red-200"

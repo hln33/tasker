@@ -113,8 +113,8 @@ func (r *TaskRepository) UpdateTask(id string, t task.Task) (*task.Task, error) 
 		UPDATE tasks
 		SET title = COALESCE(NULLIF($1, ''), title),
 		    description = COALESCE(NULLIF($2, ''), description),
-		    status = $3,
-		    priority = $4,
+		    status = COALESCE(NULLIF($3, ''), status),
+		    priority = COALESCE(NULLIF($4, ''), priority),
 		    updated_at = $5
 		WHERE id = $6
 		RETURNING id, title, description, status, priority, created_at, updated_at

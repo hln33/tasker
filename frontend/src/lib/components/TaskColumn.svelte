@@ -15,12 +15,14 @@
 		type,
 		tasks,
 		emptyMessage,
-		onDelete
+		onDelete,
+		onEdit
 	}: {
 		type: typeof TODO | typeof IN_PROGRESS | typeof DONE;
 		tasks: Task[];
 		emptyMessage: string;
 		onDelete: (task: Task) => void;
+		onEdit: (task: Task) => void;
 	} = $props();
 
 	const colorClasses = {
@@ -64,16 +66,16 @@
 	};
 </script>
 
-<div class="h-fit min-h-96 {currentColor().bg} rounded-lg p-4 shadow-md">
-	<div class="mb-4 flex items-center gap-2">
-		<h2 class="text-lg font-bold {currentColor().text}">{type}</h2>
-		{#if type === TODO}
-			<Pencil class="{currentColor().text} size-5" />
+<div class=" {currentColor().bg} rounded-lg p-4 shadow-md">
+  <div class="mb-4 flex items-center gap-2">
+    {#if type === TODO}
+    <Pencil class="{currentColor().text} size-5" />
 		{:else if type === IN_PROGRESS}
-			<FastForward class="{currentColor().text} size-5" />
+    <FastForward class="{currentColor().text} size-5" />
 		{:else if type === DONE}
-			<Checkmark class={currentColor().text}/>
+    <Checkmark class={currentColor().text} />
 		{/if}
+    <h2 class="text-lg font-bold {currentColor().text}">{type}</h2>
 	</div>
 
 	<section
@@ -88,10 +90,10 @@
 		}}
 		onconsider={(e) => handleDndConsider(e)}
 		onfinalize={(e) => handleDndFinalize(e)}
-		class="flex min-h-52 flex-col gap-4 rounded-lg p-2 transition-all duration-100 ease-in-out"
+		class="flex max-h-256 min-h-90 flex-col gap-4 overflow-y-auto rounded-lg p-2 transition-all duration-100 ease-in-out"
 	>
 		{#each tasks as task (task.id)}
-			<TaskCard {task} {onDelete} />
+			<TaskCard {task} {onDelete} {onEdit} />
 		{/each}
 	</section>
 

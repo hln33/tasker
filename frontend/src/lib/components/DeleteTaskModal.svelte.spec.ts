@@ -14,7 +14,7 @@ describe('DeleteTaskModal.svelte', () => {
 	};
 
 	it('should render modal when open prop is true', async () => {
-		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {} });
+		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {}, onDeleteSuccess: () => {} });
 
 		// Check for the modal heading
 		const heading = page.getByRole('heading', { name: 'Delete Task' });
@@ -34,7 +34,7 @@ describe('DeleteTaskModal.svelte', () => {
 	});
 
 	it('should not render modal when open prop is false', async () => {
-		render(DeleteTaskModal, { open: false, task: mockTask, onClose: () => {} });
+		render(DeleteTaskModal, { open: false, task: mockTask, onClose: () => {}, onDeleteSuccess: () => {} });
 
 		// Check that the modal heading is not present
 		const heading = page.getByRole('heading', { name: 'Delete Task' });
@@ -42,7 +42,7 @@ describe('DeleteTaskModal.svelte', () => {
 	});
 
 	it('should display task title correctly', async () => {
-		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {} });
+		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {}, onDeleteSuccess: () => {} });
 
 		// Check for the task title in the confirmation message
 		const taskTitle = page.getByText('Test Task to Delete', { exact: false });
@@ -50,7 +50,7 @@ describe('DeleteTaskModal.svelte', () => {
 	});
 
 	it('should show confirmation message', async () => {
-		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {} });
+		render(DeleteTaskModal, { open: true, task: mockTask, onClose: () => {}, onDeleteSuccess: () => {} });
 
 		// Check for the confirmation message text
 		const confirmationMessage = page.getByText(/Are you sure you want to delete the task/);
@@ -62,7 +62,7 @@ describe('DeleteTaskModal.svelte', () => {
 	});
 
 	it('should handle null task gracefully', async () => {
-		render(DeleteTaskModal, { open: true, task: null, onClose: () => {} });
+		render(DeleteTaskModal, { open: true, task: null, onClose: () => {}, onDeleteSuccess: () => {} });
 
 		// Modal should still render even with null task
 		const heading = page.getByRole('heading', { name: 'Delete Task' });
