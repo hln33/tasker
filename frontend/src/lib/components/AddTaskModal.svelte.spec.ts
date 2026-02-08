@@ -5,7 +5,7 @@ import AddTaskModal from './AddTaskModal.svelte';
 
 describe('addTaskModal.svelte', () => {
 	it('should render modal when open prop is true', async () => {
-		render(AddTaskModal, { open: true, onClose: () => {} });
+		render(AddTaskModal, { open: true, onClose: () => {}, onAddSuccess: () => {} });
 
 		// Check for the modal heading
 		const heading = page.getByRole('heading', { name: 'Create New Task' });
@@ -21,7 +21,7 @@ describe('addTaskModal.svelte', () => {
 	});
 
 	it('should not render modal when open prop is false', async () => {
-		render(AddTaskModal, { open: false, onClose: () => {} });
+		render(AddTaskModal, { open: false, onClose: () => {}, onAddSuccess: () => {} });
 
 		// Check that the modal heading is not present
 		const heading = page.getByRole('heading', { name: 'Create New Task' });

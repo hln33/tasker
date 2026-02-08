@@ -2,7 +2,11 @@
 	import { createTask } from '$lib/api';
 	import type { CreateTaskInput } from '$lib/types';
 
-	let { open = false, onClose }: { open: boolean; onClose: () => void } = $props();
+	let {
+		open = false,
+		onClose,
+		onAddSuccess
+	}: { open: boolean; onClose: () => void; onAddSuccess: () => void } = $props();
 
 	let isSubmitting = $state(false);
 	let errorMessage = $state('');
@@ -39,7 +43,8 @@
 		try {
 			await createTask(formData);
 			resetForm();
-			onClose();
+			onAddSuccess();
+      onClose();
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : 'Failed to create task';
 		} finally {

@@ -134,16 +134,14 @@
 
 		<AddTaskModal
 			open={showAddTaskModal}
-			onClose={() => {
-				closeAddTaskModal();
-				handleTaskCreated();
-			}}
+			onClose={closeAddTaskModal}
+			onAddSuccess={handleTaskCreated}
 		/>
 		<DeleteTaskModal
 			open={showDeleteModal}
 			task={taskToDelete}
 			onClose={closeDeleteModal}
-      onDeleteSuccess={handleTaskDeleted}
+			onDeleteSuccess={handleTaskDeleted}
 		/>
 		<EditTaskPanel
 			open={isEditPanelOpen}
