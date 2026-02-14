@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import type { Task } from '$lib/types';
-	import { invalidateAll } from '$app/navigation';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
 	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
 	import EditTaskPanel from '$lib/components/EditTaskPanel.svelte';
@@ -43,8 +42,7 @@
 		taskToDelete = null;
 	}
 
-	async function handleTaskDeleted() {
-		await invalidateAll();
+	function handleTaskDeleted() {
 		successMessage = 'Task deleted successfully!';
 		setTimeout(() => {
 			successMessage = '';
@@ -62,7 +60,6 @@
 	}
 
 	async function handleTaskEdited() {
-		await invalidateAll();
 		successMessage = 'Task updated successfully!';
 		setTimeout(() => {
 			successMessage = '';

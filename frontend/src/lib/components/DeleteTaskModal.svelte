@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { deleteTask } from '$lib/api';
+	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
+	import type { ActionResult } from '@sveltejs/kit';
 	import type { Task } from '$lib/types';
 
 	let {
@@ -14,31 +16,8 @@
 		onDeleteSuccess: () => void;
 	} = $props();
 
-	let isDeleting = $state(false);
-	let errorMessage = $state('');
-
-	async function handleDelete() {
-		if (!task || isDeleting) return;
-
-		isDeleting = true;
-		errorMessage = '';
-
-		try {
-			await deleteTask(task.id);
-			onDeleteSuccess();
-		} catch (e) {
-			errorMessage = e instanceof Error ? e.message : 'Failed to delete task';
-		} finally {
-			onClose();
-			isDeleting = false;
-		}
-	}
-
 	function handleClose() {
-		if (!isDeleting) {
-			onClose();
-			errorMessage = '';
-		}
+		onClose();
 	}
 </script>
 
@@ -49,10 +28,25 @@
 				<h2 class="text-2xl font-bold text-gray-900">Delete Task</h2>
 			</div>
 
-			<div class="space-y-4 p-6">
-				{#if errorMessage}
+			<form
+				method="POST"
+				action="?/deleteTask"
+				use:enhance={() => {
+					return async ({ result, update }) => {
+						if (result.type === 'success') {
+							onDeleteSuccess();
+							onClose();
+						}
+            await update();
+					};
+				}}
+				class="space-y-4 p-6"
+			>
+				<input type="hidden" name="taskId" value={task?.id} />
+
+				{#if page.form?.error}
 					<div class="rounded-lg border border-red-200 bg-red-50 p-4">
-						<p class="text-sm text-red-800">{errorMessage}</p>
+						<p class="text-sm text-red-800">{page.form.error}</p>
 					</div>
 				{/if}
 
@@ -64,23 +58,20 @@
 
 				<div class="flex gap-3 pt-4">
 					<button
-						onclick={handleDelete}
-						disabled={isDeleting}
-						class="flex-1 cursor-pointer rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:bg-gray-400"
-						type="button"
+						type="submit"
+						class="flex-1 cursor-pointer rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700"
 					>
-						{isDeleting ? 'Deleting...' : 'Delete'}
+						Delete
 					</button>
 					<button
-						onclick={handleClose}
-						disabled={isDeleting}
-						class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-200"
 						type="button"
+						onclick={handleClose}
+						class="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-50"
 					>
 						Cancel
 					</button>
 				</div>
-			</div>
+			</form>
 		</div>
 	</div>
 {/if}

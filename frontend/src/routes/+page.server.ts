@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { createTask } from '$lib/api';
+import { createTask, deleteTask, updateTask } from '$lib/api';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch }) => {
@@ -17,7 +17,6 @@ export const actions: Actions = {
 		const status = formData.get('status') || 'TODO';
 		const priority = formData.get('priority') || 'Medium';
 
-		// Validation
 		if (!title || typeof title !== 'string' || !title.trim()) {
 			return fail(400, {
 				error: 'Title is required',
@@ -43,6 +42,66 @@ export const actions: Actions = {
 				title: title.toString(),
 				description: description?.toString() || '',
 				status: status.toString(),
+				priority: priority.toString()
+			});
+		}
+	},
+
+	deleteTask: async ({ request }) => {
+		const formData = await request.formData();
+		const taskId = formData.get('taskId');
+
+		if (!taskId || typeof taskId !== 'string') {
+			return fail(400, {
+				error: 'Task ID is required'
+			});
+		}
+
+		try {
+			await deleteTask(taskId);
+			return { success: true };
+		} catch (e) {
+			return fail(500, {
+				error: e instanceof Error ? e.message : 'Failed to delete task'
+			});
+		}
+	},
+
+	updateTask: async ({ request }) => {
+		const formData = await request.formData();
+		const taskId = formData.get('taskId');
+		const title = formData.get('title');
+		const description = formData.get('description');
+		const priority = formData.get('priority') || 'Medium';
+
+		if (!taskId || typeof taskId !== 'string') {
+			return fail(400, { error: 'Task ID is required' });
+		}
+
+		if (!title || typeof title !== 'string' || !title.trim()) {
+			return fail(400, {
+				error: 'Title is required',
+				taskId: taskId.toString(),
+				title: '',
+				description: description?.toString() || '',
+				priority: priority.toString()
+			});
+		}
+
+		try {
+			const task = await updateTask(taskId.toString(), {
+				title: title.trim(),
+				description: description?.toString() || '',
+				priority: priority.toString() as 'Low' | 'Medium' | 'High'
+			});
+
+			return { success: true, task };
+		} catch (e) {
+			return fail(500, {
+				error: e instanceof Error ? e.message : 'Failed to update task',
+				taskId: taskId.toString(),
+				title: title.toString(),
+				description: description?.toString() || '',
 				priority: priority.toString()
 			});
 		}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
-	import type { ActionResult } from '@sveltejs/kit';
 
 	let {
 		open = false,
