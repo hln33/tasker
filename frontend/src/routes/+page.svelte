@@ -68,37 +68,36 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gray-200 px-4 py-12">
-	<div class="mx-auto max-w-7xl">
-		<div class="mb-8 flex items-center justify-between">
+<div class="max-w-7xl">
+	<div class="mb-8 flex items-center justify-between">
 			<h1 class="text-3xl font-bold text-gray-900">Tasker</h1>
-			<button
-				onclick={openAddTaskModal}
-				class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-			>
-				Add Task
-			</button>
+		<button
+			onclick={openAddTaskModal}
+			class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+		>
+			Add Task
+		</button>
+	</div>
+
+	{#if successMessage}
+		<div class="mb-4 rounded-lg border border-green-200 bg-green-50 p-4">
+			<p class="text-green-800">{successMessage}</p>
 		</div>
+	{/if}
 
-		{#if successMessage}
-			<div class="mb-4 rounded-lg border border-green-200 bg-green-50 p-4">
-				<p class="text-green-800">{successMessage}</p>
-			</div>
-		{/if}
-
-		{#await data.tasks}
-			<div class="rounded-lg bg-white p-6 shadow">
-				<p class="text-gray-700">Loading task...</p>
-			</div>
-		{:then tasks}
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-				<TaskColumn
-					type="TODO"
-					tasks={tasks.filter((t: Task) => t.status === 'TODO')}
-					emptyMessage="No tasks to do"
-					onDelete={openDeleteModal}
-					onEdit={openEditPanel}
-				/>
+	{#await data.tasks}
+		<div class="rounded-lg bg-white p-6 shadow">
+			<p class="text-gray-700">Loading task...</p>
+		</div>
+	{:then tasks}
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+			<TaskColumn
+				type="TODO"
+				tasks={tasks.filter((t: Task) => t.status === 'TODO')}
+				emptyMessage="No tasks to do"
+				onDelete={openDeleteModal}
+				onEdit={openEditPanel}
+			/>
 
 				<TaskColumn
 					type="In Progress"
@@ -128,24 +127,23 @@
 			</div>
 		{/await}
 
-		<AddTaskModal
-			open={showAddTaskModal}
-			onClose={closeAddTaskModal}
-			onAddSuccess={handleTaskCreated}
-		/>
-		<DeleteTaskModal
-			open={showDeleteModal}
-			task={taskToDelete}
-			onClose={closeDeleteModal}
-			onDeleteSuccess={handleTaskDeleted}
-		/>
-		<EditTaskPanel
-			open={isEditPanelOpen}
-			task={taskToEdit}
-			onClose={closeEditPanel}
-			onEditSuccess={handleTaskEdited}
-		/>
-	</div>
+	<AddTaskModal
+		open={showAddTaskModal}
+		onClose={closeAddTaskModal}
+		onAddSuccess={handleTaskCreated}
+	/>
+	<DeleteTaskModal
+		open={showDeleteModal}
+		task={taskToDelete}
+		onClose={closeDeleteModal}
+		onDeleteSuccess={handleTaskDeleted}
+	/>
+	<EditTaskPanel
+		open={isEditPanelOpen}
+		task={taskToEdit}
+		onClose={closeEditPanel}
+		onEditSuccess={handleTaskEdited}
+	/>
 </div>
 
 <style>
