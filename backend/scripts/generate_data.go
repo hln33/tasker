@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 )
 
 func main() {
-	tasks := []task.Task{
+	tasks := []types.Task{
 		{
 			ID:          "TASK-001",
 			Title:       "Setup project repository",

@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,17 +15,17 @@ func TestPostTaskHandler_Success(t *testing.T) {
 
 	r := setupTestRouter()
 
-	jsonBody := marshalTaskBody("Test task.Task", "Test Description", "In Progress", "High")
+	jsonBody := marshalTaskBody("Test types.Task", "Test Description", "In Progress", "High")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var response task.Task
+	var response types.Task
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "TASK-001", response.ID)
-	assert.Equal(t, "Test task.Task", response.Title)
+	assert.Equal(t, "Test types.Task", response.Title)
 	assert.Equal(t, "Test Description", response.Description)
 	assert.Equal(t, "In Progress", response.Status)
 	assert.Equal(t, "High", response.Priority)
@@ -37,12 +37,12 @@ func TestPostTaskHandler_WithDefaults(t *testing.T) {
 
 	r := setupTestRouter()
 
-	jsonBody := marshalTaskBody("Minimal task.Task", "", "", "")
+	jsonBody := marshalTaskBody("Minimal types.Task", "", "", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, "TODO", response.Status)
@@ -56,7 +56,7 @@ func TestPostTaskHandler_MissingTitle(t *testing.T) {
 
 	r := setupTestRouter()
 
-	jsonBody := marshalTaskBody("", "task.Task without title", "", "")
+	jsonBody := marshalTaskBody("", "types.Task without title", "", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -77,7 +77,7 @@ func TestPostTaskHandler_InvalidStatus(t *testing.T) {
 
 	r := setupTestRouter()
 
-	jsonBody := marshalTaskBody("Test task.Task", "", "InvalidStatus", "")
+	jsonBody := marshalTaskBody("Test types.Task", "", "InvalidStatus", "")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -96,7 +96,7 @@ func TestPostTaskHandler_InvalidPriority(t *testing.T) {
 
 	r := setupTestRouter()
 
-	jsonBody := marshalTaskBody("Test task.Task", "", "", "InvalidPriority")
+	jsonBody := marshalTaskBody("Test types.Task", "", "", "InvalidPriority")
 	w := makePostRequest(r, jsonBody)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -131,18 +131,18 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 	r := setupTestRouter()
 
 	// Create first task
-	jsonBody1 := marshalTaskBody("task.Task 1", "", "", "")
+	jsonBody1 := marshalTaskBody("types.Task 1", "", "", "")
 	w1 := makePostRequest(r, jsonBody1)
 
-	var response1 task.Task
+	var response1 types.Task
 	json.Unmarshal(w1.Body.Bytes(), &response1)
 	assert.Equal(t, "TASK-001", response1.ID)
 
 	// Create second task
-	jsonBody2 := marshalTaskBody("task.Task 2", "", "", "")
+	jsonBody2 := marshalTaskBody("types.Task 2", "", "", "")
 	w2 := makePostRequest(r, jsonBody2)
 
-	var response2 task.Task
+	var response2 types.Task
 	json.Unmarshal(w2.Body.Bytes(), &response2)
 	assert.Equal(t, "TASK-002", response2.ID)
 }
@@ -150,13 +150,13 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 func TestValidateTask(t *testing.T) {
 	tests := []struct {
 		name        string
-		task        task.Task
+		task        types.Task
 		expectError bool
 		errorFields []string
 	}{
 		{
 			name: "Valid task",
-			task: task.Task{
+			task: types.Task{
 				Title:    "Valid Title",
 				Status:   "TODO",
 				Priority: "High",
@@ -165,7 +165,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Empty title",
-			task: task.Task{
+			task: types.Task{
 				Title: "",
 			},
 			expectError: true,
@@ -173,7 +173,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Whitespace only title",
-			task: task.Task{
+			task: types.Task{
 				Title: "   ",
 			},
 			expectError: true,
@@ -181,7 +181,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Invalid status",
-			task: task.Task{
+			task: types.Task{
 				Title:  "Valid Title",
 				Status: "Invalid",
 			},
@@ -190,7 +190,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Invalid priority",
-			task: task.Task{
+			task: types.Task{
 				Title:    "Valid Title",
 				Priority: "Invalid",
 			},
@@ -199,7 +199,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Multiple errors",
-			task: task.Task{
+			task: types.Task{
 				Title:    "",
 				Status:   "Invalid",
 				Priority: "Invalid",
@@ -209,7 +209,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Valid status values",
-			task: task.Task{
+			task: types.Task{
 				Title:  "Test",
 				Status: "In Progress",
 			},
@@ -217,7 +217,7 @@ func TestValidateTask(t *testing.T) {
 		},
 		{
 			name: "Valid priority values",
-			task: task.Task{
+			task: types.Task{
 				Title:    "Test",
 				Priority: "Low",
 			},

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"time"
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +33,7 @@ func TestPutTaskHandler_Success_FullUpdate(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Wait a bit to ensure UpdatedAt will be different
@@ -45,7 +45,7 @@ func TestPutTaskHandler_Success_FullUpdate(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	assert.Equal(t, createdTask.ID, response.ID)
@@ -66,7 +66,7 @@ func TestPutTaskHandler_Success_PartialUpdate(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Update only status
@@ -75,7 +75,7 @@ func TestPutTaskHandler_Success_PartialUpdate(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	assert.Equal(t, createdTask.ID, response.ID)
@@ -112,7 +112,7 @@ func TestPutTaskHandler_InvalidStatus(t *testing.T) {
 	jsonBody := marshalTaskBody("Test Task", "Test Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Try to update with invalid status
@@ -141,7 +141,7 @@ func TestPutTaskHandler_InvalidPriority(t *testing.T) {
 	jsonBody := marshalTaskBody("Test Task", "Test Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Try to update with invalid priority
@@ -168,7 +168,7 @@ func TestPutTaskHandler_EmptyTitle(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Empty title should be treated as "no change", not a validation error
@@ -179,7 +179,7 @@ func TestPutTaskHandler_EmptyTitle(t *testing.T) {
 	// Should succeed because empty title means "skip updating title"
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	// Title should remain unchanged (not set to empty)
@@ -199,7 +199,7 @@ func TestPutTaskHandler_MultipleValidationErrors(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Try to update with invalid status and priority (empty title is treated as "no change")
@@ -229,7 +229,7 @@ func TestPutTaskHandler_InvalidJSON(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Try to update with invalid JSON
@@ -253,7 +253,7 @@ func TestPutTaskHandler_UpdatedAtTimestampUpdates(t *testing.T) {
 	jsonBody := marshalTaskBody("Test Task", "Test Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 	originalUpdatedAt := createdTask.UpdatedAt
 
@@ -266,7 +266,7 @@ func TestPutTaskHandler_UpdatedAtTimestampUpdates(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	assert.True(t, response.UpdatedAt.After(originalUpdatedAt))
@@ -282,7 +282,7 @@ func TestPutTaskHandler_StatusOnlyUpdate(t *testing.T) {
 	jsonBody := marshalTaskBody("Test Task", "Test Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Update only status
@@ -291,7 +291,7 @@ func TestPutTaskHandler_StatusOnlyUpdate(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	assert.Equal(t, "Test Task", response.Title)
@@ -310,7 +310,7 @@ func TestPutTaskHandler_PriorityOnlyUpdate(t *testing.T) {
 	jsonBody := marshalTaskBody("Test Task", "Test Description", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Update only priority
@@ -319,7 +319,7 @@ func TestPutTaskHandler_PriorityOnlyUpdate(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	assert.Equal(t, "Test Task", response.Title)
@@ -354,7 +354,7 @@ func TestPutTaskHandler_OmittedFieldsPreserveExistingValues(t *testing.T) {
 	jsonBody := marshalTaskBody("Original Title", "Original Description", "In Progress", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Send a partial update with only some fields (others will be empty strings after binding)
@@ -370,7 +370,7 @@ func TestPutTaskHandler_OmittedFieldsPreserveExistingValues(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, putW.Code)
 
-	var response task.Task
+	var response types.Task
 	json.Unmarshal(putW.Body.Bytes(), &response)
 
 	// Verify sent fields were updated

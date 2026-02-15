@@ -55,6 +55,7 @@ func main() {
 
 	// Initialize repository
 	repository.Tasks = repository.NewTaskRepository(db)
+	repository.Boards = repository.NewBoardRepository(db)
 
 	// Initialize ID generator from existing tasks
 	existingTasks, _ := repository.Tasks.GetAllTasks()
@@ -72,6 +73,8 @@ func main() {
 func runMigrations(cfg *config.Config) error {
 	migrationFiles := []string{
 		"migrations/000001_create_tasks_table.up.sql",
+		"migrations/002_add_boards.sql",
+		"migrations/003_refactor_board_ids.sql",
 	}
 
 	for _, file := range migrationFiles {
@@ -111,6 +114,14 @@ func setupRouter() *gin.Engine {
 	r.POST("/api/task", handlers.PostTaskHandler)
 	r.PUT("/api/task/:id", handlers.PutTaskHandler)
 	r.DELETE("/api/task/:id", handlers.DeleteTaskHandler)
+
+	// Board routes
+	r.GET("/api/boards", handlers.GetBoardHandler)
+	r.GET("/api/boards/:id", handlers.GetBoardHandler)
+	r.GET("/api/boards/:id/tasks", handlers.GetTasksByBoardHandler)
+	r.POST("/api/boards", handlers.PostBoardHandler)
+	r.PUT("/api/boards/:id", handlers.PutBoardHandler)
+	r.DELETE("/api/boards/:id", handlers.DeleteBoardHandler)
 
 	return r
 }

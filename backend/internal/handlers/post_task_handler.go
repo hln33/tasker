@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 	"tasker/internal/repository"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ var (
 )
 
 // InitTaskIDGenerator initializes the ID generator from existing tasks
-func InitTaskIDGenerator(existingTasks []task.Task) {
+func InitTaskIDGenerator(existingTasks []types.Task) {
 	for _, t := range existingTasks {
 		var id int
 		fmt.Sscanf(t.ID, "TASK-%d", &id)
@@ -33,7 +33,7 @@ func generateNextID() string {
 	return id
 }
 
-func validateTask(task task.Task) map[string]string {
+func validateTask(task types.Task) map[string]string {
 	errors := make(map[string]string)
 
 	if strings.TrimSpace(task.Title) == "" {
@@ -55,7 +55,7 @@ func validateTask(task task.Task) map[string]string {
 
 // PostTaskHandler creates a new task
 func PostTaskHandler(c *gin.Context) {
-	var newTask task.Task
+	var newTask types.Task
 	if err := c.ShouldBindJSON(&newTask); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return
@@ -73,6 +73,9 @@ func PostTaskHandler(c *gin.Context) {
 	}
 	if newTask.Priority == "" {
 		newTask.Priority = "Medium"
+	}
+	if newTask.BoardID == 0 {
+		newTask.BoardID = 1 // Default to the default board
 	}
 
 	// Save via repository

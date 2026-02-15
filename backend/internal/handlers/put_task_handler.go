@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"slices"
 	"strings"
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 	"tasker/internal/repository"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 
 // validateTaskUpdate validates only the fields that are being updated (non-empty)
 // For PUT /api/task/:id, we allow partial updates, so we only validate provided fields
-func validateTaskUpdate(t task.Task) map[string]string {
+func validateTaskUpdate(t types.Task) map[string]string {
 	errors := make(map[string]string)
 
 	// Only validate title if it's being updated (non-empty)
@@ -40,7 +40,7 @@ func validateTaskUpdate(t task.Task) map[string]string {
 func PutTaskHandler(c *gin.Context) {
 	taskID := c.Param("id")
 
-	var task task.Task
+	var task types.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return

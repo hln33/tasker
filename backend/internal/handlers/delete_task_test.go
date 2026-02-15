@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +32,7 @@ func TestDeleteTaskHandler_Success(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, postW.Code)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Now delete it
@@ -44,7 +44,7 @@ func TestDeleteTaskHandler_Success(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/api/task", nil)
 	r.ServeHTTP(getW, req)
 
-	var remainingTasks []task.Task
+	var remainingTasks []types.Task
 	json.Unmarshal(getW.Body.Bytes(), &remainingTasks)
 
 	assert.Equal(t, 0, len(remainingTasks))
@@ -91,7 +91,7 @@ func TestDeleteTaskHandler_MultipleTasks(t *testing.T) {
 	jsonBody3 := marshalTaskBody("Task 3", "", "Done", "Low")
 	postW3 := makePostRequest(r, jsonBody3)
 
-	var task1, task2, task3 task.Task
+	var task1, task2, task3 types.Task
 	json.Unmarshal(postW1.Body.Bytes(), &task1)
 	json.Unmarshal(postW2.Body.Bytes(), &task2)
 	json.Unmarshal(postW3.Body.Bytes(), &task3)
@@ -105,7 +105,7 @@ func TestDeleteTaskHandler_MultipleTasks(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/api/task", nil)
 	r.ServeHTTP(getW, req)
 
-	var remainingTasks []task.Task
+	var remainingTasks []types.Task
 	json.Unmarshal(getW.Body.Bytes(), &remainingTasks)
 
 	assert.Equal(t, 2, len(remainingTasks))
@@ -131,7 +131,7 @@ func TestDeleteTaskHandler_DeleteTwice(t *testing.T) {
 	jsonBody := marshalTaskBody("Task to delete twice", "", "TODO", "Medium")
 	postW := makePostRequest(r, jsonBody)
 
-	var createdTask task.Task
+	var createdTask types.Task
 	json.Unmarshal(postW.Body.Bytes(), &createdTask)
 
 	// Delete it first time

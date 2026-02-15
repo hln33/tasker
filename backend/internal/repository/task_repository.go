@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	task "tasker/internal/Task"
+	types "tasker/internal/types"
 
 	"github.com/jmoiron/sqlx"
 )
 
 // TaskRepositoryInterface defines the contract for task data operations
 type TaskRepositoryInterface interface {
-	GetAllTasks() ([]task.Task, error)
-	GetTaskByID(id string) (*task.Task, error)
-	CreateTask(t task.Task) (*task.Task, error)
-	UpdateTask(id string, t task.Task) (*task.Task, error)
+	GetAllTasks() ([]types.Task, error)
+	GetTaskByID(id string) (*types.Task, error)
+	CreateTask(t types.Task) (*types.Task, error)
+	UpdateTask(id string, t types.Task) (*types.Task, error)
 	DeleteTask(id string) error
 }
 
@@ -29,9 +29,9 @@ func NewTaskRepository(db *sqlx.DB) *TaskRepository {
 	return &TaskRepository{db: db}
 }
 
-func (r *TaskRepository) GetAllTasks() ([]task.Task, error) {
-	var tasks []task.Task
-	query := `SELECT id, title, description, status, priority, created_at, updated_at FROM tasks ORDER BY created_at DESC`
+func (r *TaskRepository) GetAllTasks() ([]types.Task, error) {
+	var tasks []types.Task
+	query := `SELECT id, title, description, status, priority, board_id, created_at, updated_at FROM tasks ORDER BY created_at DESC`
 
 	err := r.db.Select(&tasks, query)
 	if err != nil {
@@ -41,9 +41,9 @@ func (r *TaskRepository) GetAllTasks() ([]task.Task, error) {
 	return tasks, nil
 }
 
-func (r *TaskRepository) GetTaskByID(id string) (*task.Task, error) {
-	var t task.Task
-	query := `SELECT id, title, description, status, priority, created_at, updated_at FROM tasks WHERE id = $1`
+func (r *TaskRepository) GetTaskByID(id string) (*types.Task, error) {
+	var t types.Task
+	query := `SELECT id, title, description, status, priority, board_id, created_at, updated_at FROM tasks WHERE id = $1`
 	err := r.db.Get(&t, query, id)
 
 	if err != nil {
@@ -56,27 +56,28 @@ func (r *TaskRepository) GetTaskByID(id string) (*task.Task, error) {
 	return &t, nil
 }
 
-func (r *TaskRepository) CreateTask(t task.Task) (*task.Task, error) {
+func (r *TaskRepository) CreateTask(t types.Task) (*types.Task, error) {
 	now := time.Now()
 	t.CreatedAt = now
 	t.UpdatedAt = now
 
 	query := `
-		INSERT INTO tasks (id, title, description, status, priority, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		RETURNING id, title, description, status, priority, created_at, updated_at
+		INSERT INTO tasks (id, title, description, status, priority, board_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, title, description, status, priority, board_id, created_at, updated_at
 	`
 
-	var createdTask task.Task
+	var createdTask types.Task
 	err := r.db.QueryRow(
 		query,
-		t.ID, t.Title, t.Description, t.Status, t.Priority, t.CreatedAt, t.UpdatedAt,
+		t.ID, t.Title, t.Description, t.Status, t.Priority, t.BoardID, t.CreatedAt, t.UpdatedAt,
 	).Scan(
 		&createdTask.ID,
 		&createdTask.Title,
 		&createdTask.Description,
 		&createdTask.Status,
 		&createdTask.Priority,
+		&createdTask.BoardID,
 		&createdTask.CreatedAt,
 		&createdTask.UpdatedAt,
 	)
@@ -106,7 +107,7 @@ func (r *TaskRepository) DeleteTask(id string) error {
 	return nil
 }
 
-func (r *TaskRepository) UpdateTask(id string, t task.Task) (*task.Task, error) {
+func (r *TaskRepository) UpdateTask(id string, t types.Task) (*types.Task, error) {
 	t.UpdatedAt = time.Now()
 
 	query := `
@@ -115,21 +116,23 @@ func (r *TaskRepository) UpdateTask(id string, t task.Task) (*task.Task, error) 
 		    description = COALESCE(NULLIF($2, ''), description),
 		    status = COALESCE(NULLIF($3, ''), status),
 		    priority = COALESCE(NULLIF($4, ''), priority),
-		    updated_at = $5
-		WHERE id = $6
-		RETURNING id, title, description, status, priority, created_at, updated_at
+		    board_id = COALESCE(NULLIF($5, 0), board_id),
+		    updated_at = $6
+		WHERE id = $7
+		RETURNING id, title, description, status, priority, board_id, created_at, updated_at
 	`
 
-	var updatedTask task.Task
+	var updatedTask types.Task
 	err := r.db.QueryRow(
 		query,
-		t.Title, t.Description, t.Status, t.Priority, t.UpdatedAt, id,
+		t.Title, t.Description, t.Status, t.Priority, t.BoardID, t.UpdatedAt, id,
 	).Scan(
 		&updatedTask.ID,
 		&updatedTask.Title,
 		&updatedTask.Description,
 		&updatedTask.Status,
 		&updatedTask.Priority,
+		&updatedTask.BoardID,
 		&updatedTask.CreatedAt,
 		&updatedTask.UpdatedAt,
 	)
