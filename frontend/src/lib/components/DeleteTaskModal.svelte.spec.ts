@@ -6,7 +6,7 @@ import type { Task } from '$lib/types';
 
 describe('DeleteTaskModal.svelte', () => {
 	const mockTask: Task = {
-		id: 'TASK-001',
+		id: 1,
 		title: 'Test Task to Delete',
 		description: 'This is a test task',
 		status: 'TODO',

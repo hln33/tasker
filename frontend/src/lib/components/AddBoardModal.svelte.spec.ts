@@ -47,9 +47,8 @@ describe('AddBoardModal.svelte', () => {
 			const descriptionInput = page.getByLabelText('Description');
 			await expect.element(descriptionInput).toBeInTheDocument();
 
-			// Color input
-			const colorLabel = page.getByText('Color');
-			await expect.element(colorLabel).toBeInTheDocument();
+			const colorInput = page.getByLabelText('Color');
+			await expect.element(colorInput).toBeInTheDocument();
 		});
 
 		it('should render Create Board and Cancel buttons', async () => {

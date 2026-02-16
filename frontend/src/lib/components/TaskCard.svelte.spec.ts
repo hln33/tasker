@@ -6,7 +6,7 @@ import type { Task } from '$lib/types';
 
 describe('TaskCard.svelte', () => {
 	const mockTask: Task = {
-		id: 'TASK-001',
+		id: 1,
 		title: 'Test Task Title',
 		description: 'This is a test task description',
 		status: 'TODO',

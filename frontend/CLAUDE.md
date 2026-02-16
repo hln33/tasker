@@ -110,6 +110,66 @@ if (typeof data === 'object' && data !== null && 'key' in data) {
 
 ---
 
+## Testing Best Practices
+
+### Test Selector Guidelines
+
+When writing tests, **prefer semantically meaningful selectors** that directly target the element's purpose rather than its text content.
+
+#### Selector Preference Order (Best to Worst)
+
+1. **`getByRole()`** - Best for interactive elements (buttons, links, etc.)
+2. **`getByLabelText()`** - Best for form inputs associated with labels
+3. **`getByPlaceholderText()`** - For inputs with descriptive placeholders
+4. **`getByAltText()`** - For images and media
+5. **`getByTitle()`** - For elements with title attributes
+6. **`getByText()`** - Use as a last resort, always use `{ exact: true }` if possible
+
+#### Examples
+
+**✅ GOOD - Using semantic selectors:**
+```typescript
+// For buttons and links
+const button = page.getByRole('button', { name: 'Submit' });
+const link = page.getByRole('link', { name: 'Learn more' });
+
+// For form inputs with labels
+const nameInput = page.getByLabelText('Full Name');
+const emailInput = page.getByLabelText('Email');
+const colorInput = page.getByLabelText('Color');
+```
+
+**❌ BAD - Using text selectors that can match multiple elements:**
+```typescript
+// This can match both the label AND helper text containing "Color"
+const color = page.getByText('Color'); // STRICT MODE ERROR!
+
+// This is fragile - breaks if button text changes slightly
+const button = page.getByText('Click here to submit');
+```
+
+**✅ GOOD - Using exact text match when `getByText` is necessary:**
+```typescript
+// Only matches elements with EXACTLY "Color" as text
+const colorLabel = page.getByText('Color', { exact: true });
+```
+
+#### Common Mistakes to Avoid
+
+- ❌ Using `getByText()` for words that appear in multiple places (labels, helper text, descriptions)
+- ❌ Using `getByText()` without `{ exact: true }` when exact matching is needed
+- ❌ Using CSS selectors that couple tests to implementation details
+- ❌ Testing via data-testid attributes (use accessible selectors first)
+
+#### Why This Matters
+
+1. **More resilient to UI changes** - Semantic selectors work even if wording changes
+2. **Better accessibility** - Encourages proper ARIA roles and labels
+3. **Fewer false matches** - `getByLabelText()` won't accidentally match helper text
+4. **Clearer intent** - `getByRole('button')` clearly indicates you're testing a button
+
+---
+
 ## Git Commit Guidelines
 
 ### Conventional Commits Standard

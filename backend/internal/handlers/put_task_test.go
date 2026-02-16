@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -13,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func makePutRequest(r *gin.Engine, id string, body []byte) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest("PUT", "/api/task/"+id, bytes.NewBuffer(body))
+func makePutRequest(r *gin.Engine, id int, body []byte) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest("PUT", fmt.Sprintf("/api/task/%d", id), bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
@@ -92,7 +93,7 @@ func TestPutTaskHandler_TaskNotFound(t *testing.T) {
 	r := setupTestRouter()
 
 	updateBody := marshalTaskBody("Updated Title", "Updated Description", "Done", "High")
-	putW := makePutRequest(r, "NON-EXISTENT", updateBody)
+	putW := makePutRequest(r, 999, updateBody)
 
 	assert.Equal(t, http.StatusNotFound, putW.Code)
 
@@ -328,16 +329,26 @@ func TestPutTaskHandler_PriorityOnlyUpdate(t *testing.T) {
 	assert.Equal(t, "High", response.Priority)
 }
 
-func TestPutTaskHandler_EmptyID(t *testing.T) {
+func TestPutTaskHandler_InvalidID(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
 	r := setupTestRouter()
 
 	updateBody := marshalTaskBody("Updated Title", "Updated Description", "Done", "High")
-	putW := makePutRequest(r, "", updateBody)
 
-	assert.Equal(t, http.StatusNotFound, putW.Code)
+	// Test with non-numeric ID
+	req, _ := http.NewRequest("PUT", "/api/task/abc", bytes.NewBuffer(updateBody))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	var response map[string]any
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, "invalid task ID format", response["error"])
 }
 
 // TestPutTaskHandler_OmittedFieldsPreserveExistingValues tests that when a field

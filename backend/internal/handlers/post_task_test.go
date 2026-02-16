@@ -24,7 +24,7 @@ func TestPostTaskHandler_Success(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "TASK-001", response.ID)
+	assert.Equal(t, 1, response.ID)
 	assert.Equal(t, "Test types.Task", response.Title)
 	assert.Equal(t, "Test Description", response.Description)
 	assert.Equal(t, "In Progress", response.Status)
@@ -136,7 +136,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 
 	var response1 types.Task
 	json.Unmarshal(w1.Body.Bytes(), &response1)
-	assert.Equal(t, "TASK-001", response1.ID)
+	assert.Equal(t, 1, response1.ID)
 
 	// Create second task
 	jsonBody2 := marshalTaskBody("types.Task 2", "", "", "")
@@ -144,7 +144,7 @@ func TestPostTaskHandler_IDIncrementing(t *testing.T) {
 
 	var response2 types.Task
 	json.Unmarshal(w2.Body.Bytes(), &response2)
-	assert.Equal(t, "TASK-002", response2.ID)
+	assert.Equal(t, 2, response2.ID)
 }
 
 func TestValidateTask(t *testing.T) {
@@ -242,31 +242,6 @@ func TestValidateTask(t *testing.T) {
 					t.Errorf("Expected error for field %s, got none", field)
 				}
 			}
-		})
-	}
-}
-
-func TestGenerateNextID(t *testing.T) {
-	setupTest()
-	defer tearDownTest()
-
-	tests := []struct {
-		name     string
-		setupID  int
-		expected string
-	}{
-		{"First ID", 1, "TASK-001"},
-		{"Tenth ID", 10, "TASK-010"},
-		{"Hundredth ID", 100, "TASK-100"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			nextID = tt.setupID
-			result := generateNextID()
-
-			assert.Equal(t, tt.expected, result)
-			assert.Equal(t, tt.setupID+1, nextID)
 		})
 	}
 }

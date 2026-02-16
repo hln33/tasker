@@ -13,10 +13,10 @@ import (
 // TaskRepositoryInterface defines the contract for task data operations
 type TaskRepositoryInterface interface {
 	GetAllTasks() ([]types.Task, error)
-	GetTaskByID(id string) (*types.Task, error)
+	GetTaskByID(id int) (*types.Task, error)
 	CreateTask(t types.Task) (*types.Task, error)
-	UpdateTask(id string, t types.Task) (*types.Task, error)
-	DeleteTask(id string) error
+	UpdateTask(id int, t types.Task) (*types.Task, error)
+	DeleteTask(id int) error
 }
 
 type TaskRepository struct {
@@ -30,7 +30,7 @@ func NewTaskRepository(db *sqlx.DB) *TaskRepository {
 }
 
 func (r *TaskRepository) GetAllTasks() ([]types.Task, error) {
-	var tasks []types.Task
+	tasks := []types.Task{}
 	query := `SELECT id, title, description, status, priority, board_id, created_at, updated_at FROM tasks ORDER BY created_at DESC`
 
 	err := r.db.Select(&tasks, query)
@@ -41,14 +41,14 @@ func (r *TaskRepository) GetAllTasks() ([]types.Task, error) {
 	return tasks, nil
 }
 
-func (r *TaskRepository) GetTaskByID(id string) (*types.Task, error) {
+func (r *TaskRepository) GetTaskByID(id int) (*types.Task, error) {
 	var t types.Task
 	query := `SELECT id, title, description, status, priority, board_id, created_at, updated_at FROM tasks WHERE id = $1`
 	err := r.db.Get(&t, query, id)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("task not found: %s", id)
+			return nil, fmt.Errorf("task not found: %d", id)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
@@ -62,15 +62,15 @@ func (r *TaskRepository) CreateTask(t types.Task) (*types.Task, error) {
 	t.UpdatedAt = now
 
 	query := `
-		INSERT INTO tasks (id, title, description, status, priority, board_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO tasks (title, description, status, priority, board_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, title, description, status, priority, board_id, created_at, updated_at
 	`
 
 	var createdTask types.Task
 	err := r.db.QueryRow(
 		query,
-		t.ID, t.Title, t.Description, t.Status, t.Priority, t.BoardID, t.CreatedAt, t.UpdatedAt,
+		t.Title, t.Description, t.Status, t.Priority, t.BoardID, t.CreatedAt, t.UpdatedAt,
 	).Scan(
 		&createdTask.ID,
 		&createdTask.Title,
@@ -88,7 +88,7 @@ func (r *TaskRepository) CreateTask(t types.Task) (*types.Task, error) {
 	return &createdTask, nil
 }
 
-func (r *TaskRepository) DeleteTask(id string) error {
+func (r *TaskRepository) DeleteTask(id int) error {
 	query := `DELETE FROM tasks WHERE id = $1`
 	result, err := r.db.Exec(query, id)
 	if err != nil {
@@ -101,13 +101,13 @@ func (r *TaskRepository) DeleteTask(id string) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("task not found: %s", id)
+		return fmt.Errorf("task not found: %d", id)
 	}
 
 	return nil
 }
 
-func (r *TaskRepository) UpdateTask(id string, t types.Task) (*types.Task, error) {
+func (r *TaskRepository) UpdateTask(id int, t types.Task) (*types.Task, error) {
 	t.UpdatedAt = time.Now()
 
 	query := `
@@ -139,7 +139,7 @@ func (r *TaskRepository) UpdateTask(id string, t types.Task) (*types.Task, error
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("task not found: %s", id)
+			return nil, fmt.Errorf("task not found: %d", id)
 		}
 		return nil, fmt.Errorf("failed to update task: %w", err)
 	}

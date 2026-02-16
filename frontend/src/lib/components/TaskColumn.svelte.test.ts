@@ -6,14 +6,14 @@ import type { Task } from '$lib/types';
 describe('TaskColumn', () => {
 	const todoTasks: Task[] = [
 		{
-			id: 'TASK-001',
+			id: 1,
 			title: 'Buy groceries',
 			description: 'Get milk, eggs, and bread',
 			status: 'TODO',
 			priority: 'high'
 		},
 		{
-			id: 'TASK-002',
+			id: 2,
 			title: 'Call dentist',
 			description: 'Schedule annual checkup',
 			status: 'TODO',
@@ -22,7 +22,7 @@ describe('TaskColumn', () => {
 	];
 	const inProgressTasks: Task[] = [
 		{
-			id: 'TASK-003',
+			id: 3,
 			title: 'Write report',
 			description: 'Complete Q4 financial analysis',
 			status: 'In Progress',

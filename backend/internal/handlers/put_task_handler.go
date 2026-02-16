@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"slices"
+	"strconv"
 	"strings"
 	types "tasker/internal/types"
 	"tasker/internal/repository"
@@ -38,7 +39,13 @@ func validateTaskUpdate(t types.Task) map[string]string {
 
 // PutTaskHandler handles PUT /api/task/:id requests
 func PutTaskHandler(c *gin.Context) {
-	taskID := c.Param("id")
+	// Parse ID parameter as integer
+	taskIDStr := c.Param("id")
+	taskID, err := strconv.Atoi(taskIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid task ID format"})
+		return
+	}
 
 	var task types.Task
 	if err := c.ShouldBindJSON(&task); err != nil {

@@ -31,7 +31,7 @@ func TestGetTaskHandler(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	body := w.Body.String()
-	assert.Contains(t, body, "TASK-001")
+	assert.Contains(t, body, `"id":1`)
 	assert.Contains(t, body, "Setup project repository")
 	assert.Contains(t, body, "Initialize the repository with basic project structure")
 	assert.Contains(t, body, "In Progress")

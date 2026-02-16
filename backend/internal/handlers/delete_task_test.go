@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	types "tasker/internal/types"
@@ -11,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func makeDeleteRequest(r *gin.Engine, id string) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest("DELETE", "/api/task/"+id, nil)
+func makeDeleteRequest(r *gin.Engine, id int) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("/api/task/%d", id), nil)
 	w := httptest.NewRecorder()
 
 	r.ServeHTTP(w, req)
@@ -56,7 +57,7 @@ func TestDeleteTaskHandler_TaskNotFound(t *testing.T) {
 
 	r := setupTestRouter()
 
-	deleteW := makeDeleteRequest(r, "NON-EXISTENT")
+	deleteW := makeDeleteRequest(r, 999)
 	assert.Equal(t, http.StatusNotFound, deleteW.Code)
 
 	var response map[string]any
@@ -65,14 +66,22 @@ func TestDeleteTaskHandler_TaskNotFound(t *testing.T) {
 	assert.Equal(t, "task not found", response["error"])
 }
 
-func TestDeleteTaskHandler_EmptyID(t *testing.T) {
+func TestDeleteTaskHandler_InvalidID(t *testing.T) {
 	setupTest()
 	defer tearDownTest()
 
 	r := setupTestRouter()
 
-	deleteW := makeDeleteRequest(r, "")
-	assert.Equal(t, http.StatusNotFound, deleteW.Code)
+	req, _ := http.NewRequest("DELETE", "/api/task/abc", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	var response map[string]any
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, "invalid task ID format", response["error"])
 }
 
 func TestDeleteTaskHandler_MultipleTasks(t *testing.T) {
@@ -111,7 +120,7 @@ func TestDeleteTaskHandler_MultipleTasks(t *testing.T) {
 	assert.Equal(t, 2, len(remainingTasks))
 
 	// Verify the remaining tasks are task1 and task3
-	taskIDs := make(map[string]bool)
+	taskIDs := make(map[int]bool)
 	for _, task := range remainingTasks {
 		taskIDs[task.ID] = true
 	}

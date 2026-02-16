@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -18,13 +17,15 @@ import (
 
 // MockTaskRepository is an in-memory implementation for testing
 type MockTaskRepository struct {
-	tasks map[string]types.Task
+	tasks map[int]types.Task
 	mu    sync.RWMutex
+	nextID int
 }
 
 func NewMockTaskRepository() *MockTaskRepository {
 	return &MockTaskRepository{
-		tasks: make(map[string]types.Task),
+		tasks: make(map[int]types.Task),
+		nextID: 1,
 	}
 }
 
@@ -39,14 +40,14 @@ func (m *MockTaskRepository) GetAllTasks() ([]types.Task, error) {
 	return result, nil
 }
 
-func (m *MockTaskRepository) GetTaskByID(id string) (*types.Task, error) {
+func (m *MockTaskRepository) GetTaskByID(id int) (*types.Task, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	if t, ok := m.tasks[id]; ok {
 		return &t, nil
 	}
-	return nil, errors.New("task not found: " + id)
+	return nil, fmt.Errorf("task not found: %d", id)
 }
 
 func (m *MockTaskRepository) CreateTask(t types.Task) (*types.Task, error) {
@@ -56,29 +57,31 @@ func (m *MockTaskRepository) CreateTask(t types.Task) (*types.Task, error) {
 	now := time.Now()
 	t.CreatedAt = now
 	t.UpdatedAt = now
+	t.ID = m.nextID
+	m.nextID++
 
 	m.tasks[t.ID] = t
 	return &t, nil
 }
 
-func (m *MockTaskRepository) DeleteTask(id string) error {
+func (m *MockTaskRepository) DeleteTask(id int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	if _, ok := m.tasks[id]; !ok {
-		return errors.New("task not found: " + id)
+		return fmt.Errorf("task not found: %d", id)
 	}
 	delete(m.tasks, id)
 	return nil
 }
 
-func (m *MockTaskRepository) UpdateTask(id string, t types.Task) (*types.Task, error) {
+func (m *MockTaskRepository) UpdateTask(id int, t types.Task) (*types.Task, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	existing, exists := m.tasks[id]
 	if !exists {
-		return nil, errors.New("task not found: " + id)
+		return nil, fmt.Errorf("task not found: %d", id)
 	}
 
 	// Update only non-empty fields (except Status/Priority which can be empty)
@@ -108,7 +111,8 @@ func (m *MockTaskRepository) UpdateTask(id string, t types.Task) (*types.Task, e
 func (m *MockTaskRepository) Clear() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.tasks = make(map[string]types.Task)
+	m.tasks = make(map[int]types.Task)
+	m.nextID = 1
 }
 
 // MockBoardRepository is an in-memory implementation for testing
@@ -209,7 +213,6 @@ var mockBoardRepo *MockBoardRepository
 
 func setupTest() {
 	gin.SetMode(gin.TestMode)
-	nextID = 1
 	mockRepo = NewMockTaskRepository()
 	mockBoardRepo = NewMockBoardRepository()
 	repository.Tasks = mockRepo

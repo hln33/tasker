@@ -59,8 +59,14 @@ export const actions: Actions = {
 			});
 		}
 
+		// Parse string to number
+		const taskIdNum = parseInt(taskId, 10);
+		if (isNaN(taskIdNum)) {
+			return fail(400, { error: 'Invalid task ID format' });
+		}
+
 		try {
-			await deleteTask(taskId);
+			await deleteTask(taskIdNum);
 			return { success: true };
 		} catch (e) {
 			return fail(500, {
@@ -80,10 +86,15 @@ export const actions: Actions = {
 			return fail(400, { error: 'Task ID is required' });
 		}
 
+		// Parse string to number
+		const taskIdNum = parseInt(taskId, 10);
+		if (isNaN(taskIdNum)) {
+			return fail(400, { error: 'Invalid task ID format' });
+		}
+
 		if (!title || typeof title !== 'string' || !title.trim()) {
 			return fail(400, {
 				error: 'Title is required',
-				taskId: taskId.toString(),
 				title: '',
 				description: description?.toString() || '',
 				priority: priority.toString()
@@ -91,7 +102,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const task = await updateTask(taskId.toString(), {
+			const task = await updateTask(taskIdNum, {
 				title: title.trim(),
 				description: description?.toString() || '',
 				priority: priority.toString() as 'Low' | 'Medium' | 'High'
@@ -101,7 +112,6 @@ export const actions: Actions = {
 		} catch (e) {
 			return fail(500, {
 				error: e instanceof Error ? e.message : 'Failed to update task',
-				taskId: taskId.toString(),
 				title: title.toString(),
 				description: description?.toString() || '',
 				priority: priority.toString()

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -48,8 +47,7 @@ func main() {
 	}
 	defer database.Close()
 
-	// Run migrations
-	if err := runMigrations(cfg); err != nil {
+	if err := runMigrations(); err != nil {
 		log.Printf("Warning: failed to run migrations: %v", err)
 	}
 
@@ -57,28 +55,19 @@ func main() {
 	repository.Tasks = repository.NewTaskRepository(db)
 	repository.Boards = repository.NewBoardRepository(db)
 
-	// Initialize ID generator from existing tasks
-	existingTasks, _ := repository.Tasks.GetAllTasks()
-	if len(existingTasks) > 0 {
-		handlers.InitTaskIDGenerator(existingTasks)
-	}
-
-	// Setup router
 	r := setupRouter()
 
 	// Start server with graceful shutdown
 	startServer(r)
 }
 
-func runMigrations(cfg *config.Config) error {
+func runMigrations() error {
 	migrationFiles := []string{
-		"migrations/000001_create_tasks_table.up.sql",
-		"migrations/002_add_boards.sql",
-		"migrations/003_refactor_board_ids.sql",
+		"migrations/000001_initial_schema.up.sql",
 	}
 
 	for _, file := range migrationFiles {
-		content, err := ioutil.ReadFile(file)
+		content, err := os.ReadFile(file)
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"slices"
 	"strings"
@@ -11,27 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-var (
-	nextID int = 1
-)
-
-// InitTaskIDGenerator initializes the ID generator from existing tasks
-func InitTaskIDGenerator(existingTasks []types.Task) {
-	for _, t := range existingTasks {
-		var id int
-		fmt.Sscanf(t.ID, "TASK-%d", &id)
-		if id >= nextID {
-			nextID = id + 1
-		}
-	}
-}
-
-func generateNextID() string {
-	id := fmt.Sprintf("TASK-%03d", nextID)
-	nextID++
-	return id
-}
 
 func validateTask(task types.Task) map[string]string {
 	errors := make(map[string]string)
@@ -66,8 +44,7 @@ func PostTaskHandler(c *gin.Context) {
 		return
 	}
 
-	// Generate ID and set defaults
-	newTask.ID = generateNextID()
+	// Set defaults
 	if newTask.Status == "" {
 		newTask.Status = "TODO"
 	}

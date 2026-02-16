@@ -43,7 +43,7 @@ export async function getBoards(): Promise<Board[]> {
 	return res.json();
 }
 
-export async function deleteTask(taskId: string): Promise<void> {
+export async function deleteTask(taskId: number): Promise<void> {
 	const res = await fetch(`${API_BASE_URL}/task/${taskId}`, {
 		method: 'DELETE',
 		headers: { 'Content-Type': 'application/json' }
@@ -55,7 +55,7 @@ export async function deleteTask(taskId: string): Promise<void> {
 	}
 }
 
-export async function updateTaskStatus(taskId: string, status: string): Promise<Task> {
+export async function updateTaskStatus(taskId: number, status: string): Promise<Task> {
 	const res = await fetch(`${API_BASE_URL}/task/${taskId}`, {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
@@ -70,7 +70,7 @@ export async function updateTaskStatus(taskId: string, status: string): Promise<
 }
 
 export async function updateTask(
-	taskId: string,
+	taskId: number,
 	taskData: Partial<CreateTaskInput>
 ): Promise<Task> {
 	const res = await fetch(`${API_BASE_URL}/task/${taskId}`, {
