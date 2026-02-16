@@ -5,7 +5,9 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ fetch }) => {
 	const res = await fetch('http://localhost:8080/api/task');
 	if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
 	const tasks = await res.json();
+
 	return { tasks };
 };
 
