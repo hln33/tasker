@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { createTask, deleteTask, updateTask } from '$lib/api';
+import * as api from '$lib/api';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch }) => {
@@ -30,7 +30,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const task = await createTask({
+			const task = await api.createTask({
 				title: title.trim(),
 				description: description?.toString() || '',
 				status: status.toString() as 'TODO' | 'In Progress' | 'Done',
@@ -66,7 +66,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await deleteTask(taskIdNum);
+			await api.deleteTask(taskIdNum);
 			return { success: true };
 		} catch (e) {
 			return fail(500, {
@@ -102,7 +102,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const task = await updateTask(taskIdNum, {
+			const task = await api.updateTask(taskIdNum, {
 				title: title.trim(),
 				description: description?.toString() || '',
 				priority: priority.toString() as 'Low' | 'Medium' | 'High'

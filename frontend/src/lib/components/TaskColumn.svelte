@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Task } from '$lib/types';
 	import { dndzone } from 'svelte-dnd-action';
-	import { updateTaskStatus } from '$lib/api';
+	import * as api from '$lib/api';
 	import TaskCard from './TaskCard.svelte';
 	import Checkmark from '$lib/icons/Checkmark.svelte';
 	import Pencil from '$lib/icons/Pencil.svelte';
@@ -58,7 +58,7 @@
 		const info = e.detail.info;
 		if (info.trigger === 'droppedIntoZone') {
 			try {
-				await updateTaskStatus(info.id, type);
+				await api.updateTaskStatus(info.id, type);
 			} catch (error) {
 				console.error('Failed to update task status:', error);
 			}

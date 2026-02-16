@@ -1,10 +1,10 @@
 import { fail } from '@sveltejs/kit';
-import { createBoard, getBoards } from '$lib/api';
+import * as api from '$lib/api';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	try {
-		const boards = await getBoards();
+		const boards = await api.getBoards();
 		return { boards };
 	} catch (error) {
 		console.error('Failed to load boards:', error);
@@ -29,7 +29,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const board = await createBoard({
+			const board = await api.createBoard({
 				name: name.trim(),
 				description: description.toString(),
 				color: color.toString()
