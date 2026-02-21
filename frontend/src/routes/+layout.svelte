@@ -10,10 +10,8 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <Sidebar.Provider>
-	<div class="flex min-h-screen">
-		<AppSidebar />
-		<main class="flex-1 bg-gray-200 p-6">
-			{@render children()}
-		</main>
-	</div>
+	<AppSidebar />
+	<main class="min-h-screen w-full bg-gray-200 p-6">
+		{@render children()}
+	</main>
 </Sidebar.Provider>
