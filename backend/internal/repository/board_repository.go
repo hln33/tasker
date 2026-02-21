@@ -155,7 +155,7 @@ func (r *BoardRepository) DeleteBoard(id int) error {
 }
 
 func (r *BoardRepository) GetTasksByBoardID(boardID int) ([]types.Task, error) {
-	var tasks []types.Task
+	tasks := []types.Task{}
 	query := `SELECT id, title, description, status, priority, board_id, created_at, updated_at FROM tasks WHERE board_id = $1 ORDER BY created_at DESC`
 
 	err := r.db.Select(&tasks, query, boardID)

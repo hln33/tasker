@@ -1,0 +1,175 @@
+<script lang="ts">
+	import type { PageProps } from './$types';
+	import type { Task } from '$lib/types';
+	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
+	import DeleteTaskModal from '$lib/components/DeleteTaskModal.svelte';
+	import EditTaskPanel from '$lib/components/EditTaskPanel.svelte';
+	import TaskColumn from '$lib/components/TaskColumn.svelte';
+
+	let { data }: PageProps = $props();
+
+	let showAddTaskModal = $state(false);
+	let showDeleteModal = $state(false);
+	let taskToDelete = $state<Task | null>(null);
+	let taskToEdit = $state<Task | null>(null);
+	let isEditPanelOpen = $state(false);
+	let successMessage = $state('');
+
+	function openAddTaskModal() {
+		showAddTaskModal = true;
+		successMessage = '';
+	}
+
+	function closeAddTaskModal() {
+		showAddTaskModal = false;
+	}
+
+	function handleTaskCreated() {
+		successMessage = 'Task created successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+	}
+
+	function openDeleteModal(task: Task) {
+		taskToDelete = task;
+		showDeleteModal = true;
+		successMessage = '';
+	}
+
+	function closeDeleteModal() {
+		showDeleteModal = false;
+		taskToDelete = null;
+	}
+
+	function handleTaskDeleted() {
+		successMessage = 'Task deleted successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+	}
+
+	function openEditPanel(task: Task) {
+		taskToEdit = task;
+		isEditPanelOpen = true;
+	}
+
+	function closeEditPanel() {
+		taskToEdit = null;
+		isEditPanelOpen = false;
+	}
+
+	async function handleTaskEdited() {
+		successMessage = 'Task updated successfully!';
+		setTimeout(() => {
+			successMessage = '';
+		}, 3000);
+		closeEditPanel();
+	}
+</script>
+
+<div class="max-w-7xl">
+	<!-- Board Context Header -->
+	<div class="mb-8">
+		<a
+			href="/boards"
+			class="cursor-pointer inline-flex items-center text-sm text-blue-600 hover:text-blue-800 mb-4"
+		>
+			← Back to Boards
+		</a>
+
+		<div class="rounded-lg bg-white p-6 shadow">
+			<div class="flex items-center gap-4">
+				<span
+					class="w-12 h-12 rounded"
+					style="background-color: {data.board.color};"
+				></span>
+				<div class="flex-1">
+					<h1 class="text-3xl font-bold text-gray-900">{data.board.name}</h1>
+					{#if data.board.description}
+						<p class="mt-1 text-gray-600">{data.board.description}</p>
+					{/if}
+				</div>
+				<button
+					onclick={openAddTaskModal}
+					class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+				>
+					Add Task
+				</button>
+			</div>
+		</div>
+	</div>
+
+	{#if successMessage}
+		<div class="mb-4 rounded-lg border border-green-200 bg-green-50 p-4">
+			<p class="text-green-800">{successMessage}</p>
+		</div>
+	{/if}
+
+	<!-- Task Columns (reused from +page.svelte) -->
+	{#await data.tasks}
+		<div class="rounded-lg bg-white p-6 shadow">
+			<p class="text-gray-700">Loading tasks...</p>
+		</div>
+	{:then tasks}
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+			<TaskColumn
+				type="TODO"
+				tasks={tasks.filter((t: Task) => t.status === 'TODO')}
+				emptyMessage="No tasks to do"
+				onDelete={openDeleteModal}
+				onEdit={openEditPanel}
+			/>
+
+			<TaskColumn
+				type="In Progress"
+				tasks={tasks.filter((t: Task) => t.status === 'In Progress')}
+				emptyMessage="No tasks in progress"
+				onDelete={openDeleteModal}
+				onEdit={openEditPanel}
+			/>
+
+			<TaskColumn
+				type="Done"
+				tasks={tasks.filter((t: Task) => t.status === 'Done')}
+				emptyMessage="No completed tasks"
+				onDelete={openDeleteModal}
+				onEdit={openEditPanel}
+			/>
+		</div>
+	{:catch error}
+		<div class="rounded-lg bg-white p-6 shadow">
+			<div class="rounded-lg border border-red-200 bg-red-50 p-4">
+				<p class="font-medium text-red-800">Error</p>
+				<p class="mt-1 text-red-600">{error.message}</p>
+			</div>
+		</div>
+	{/await}
+
+	<!-- Modals (reused from +page.svelte) -->
+	<AddTaskModal
+		open={showAddTaskModal}
+		onClose={closeAddTaskModal}
+		onAddSuccess={handleTaskCreated}
+	/>
+	<DeleteTaskModal
+		open={showDeleteModal}
+		task={taskToDelete}
+		onClose={closeDeleteModal}
+		onDeleteSuccess={handleTaskDeleted}
+	/>
+	<EditTaskPanel
+		open={isEditPanelOpen}
+		task={taskToEdit}
+		onClose={closeEditPanel}
+		onEditSuccess={handleTaskEdited}
+	/>
+</div>
+
+<style>
+	:global(.shadow-element) {
+		background: #e5e7eb !important;
+		border: 2px dashed #9ca3af !important;
+		opacity: 0.6;
+	}
+</style>

@@ -339,3 +339,13 @@ func makeGetBoardByIDRequest(r *gin.Engine, id string) *httptest.ResponseRecorde
 
 	return w
 }
+
+// makeGetBoardTasksRequest creates a GET request to /api/boards/:id/tasks for testing
+func makeGetBoardTasksRequest(r *gin.Engine, id string) *httptest.ResponseRecorder {
+	req, _ := http.NewRequest("GET", "/api/boards/"+id+"/tasks", nil)
+	w := httptest.NewRecorder()
+
+	r.ServeHTTP(w, req)
+
+	return w
+}

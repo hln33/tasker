@@ -4,6 +4,7 @@ export interface Task {
 	description: string;
 	status: string;
 	priority: string;
+	board_id: number;
 }
 
 export interface CreateTaskInput {
@@ -11,6 +12,7 @@ export interface CreateTaskInput {
 	description?: string;
 	status?: string;
 	priority?: string;
+	board_id?: number;
 }
 
 export interface Board {

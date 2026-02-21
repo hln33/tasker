@@ -44,6 +44,50 @@ For every button element, ensure it has:
 - ❌ Missing hover states for better UX
 - ❌ Forgetting ARIA labels on icon buttons
 
+### CSS and Tailwind Guidelines
+
+**ALWAYS prefer Tailwind utility classes over inline styles or style tags.**
+
+#### When to Use Tailwind Classes
+- ✅ All static styling (colors, spacing, layout, typography)
+- ✅ Responsive design (`md:`, `lg:` prefixes)
+- ✅ Hover and focus states (`hover:`, `focus:` prefixes)
+- ✅ Dynamic class toggling with Svelte conditionals
+
+#### When Inline Styles Are Acceptable
+The only exception is for **runtime-dynamic values** that cannot be determined at build time:
+
+```svelte
+<!-- ✅ OK: Dynamic user-provided color -->
+<span style="background-color: {user.selectedColor};">
+
+<!-- ✅ OK: Dynamic measurements from data -->
+<div style="width: {item.width}px;">
+
+<!-- ✅ OK: CSS custom properties -->
+<div style="--my-color: {dynamicColor};">
+```
+
+#### Examples
+
+**❌ BAD - Inline style for static values:**
+```svelte
+<div style="padding: 1rem; margin-bottom: 2rem;">
+<button style="background-color: blue;">
+```
+
+**✅ GOOD - Tailwind classes:**
+```svelte
+<div class="p-4 mb-8">
+<button class="bg-blue-600">
+```
+
+**✅ GOOD - Tailwind + inline for dynamic values:**
+```svelte
+<!-- Static properties as classes, dynamic color as inline style -->
+<div class="border-l-4 rounded-lg" style="border-color: {board.color};">
+```
+
 ### TypeScript Best Practices
 
 #### Type Safety Requirements

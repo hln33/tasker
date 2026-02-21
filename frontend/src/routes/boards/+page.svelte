@@ -59,9 +59,10 @@
 		{:else}
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each boards as board (board.id)}
-					<div
-						class="rounded-lg bg-white shadow hover:shadow-lg transition-shadow"
-						style="border-left: 4px solid {board.color};"
+					<a
+						href="/boards/{board.id}"
+						class="block rounded-lg bg-white shadow hover:shadow-lg transition-shadow border-l-4"
+						style="border-color: {board.color};"
 					>
 						<div class="p-6">
 							<h2 class="text-xl font-bold text-gray-900 mb-2">{board.name}</h2>
@@ -76,7 +77,7 @@
 								<span>Created {new Date(board.created_at).toLocaleDateString()}</span>
 							</div>
 						</div>
-					</div>
+					</a>
 				{/each}
 			</div>
 		{/if}

@@ -43,6 +43,24 @@ export async function getBoards(): Promise<Board[]> {
 	return res.json();
 }
 
+export async function getBoard(id: number): Promise<Board> {
+	const res = await fetch(`${API_BASE_URL}/boards/${id}`);
+	if (!res.ok) {
+		const err = await res.json().catch(() => ({ message: 'Unknown error' }));
+		throw new Error(err.message || 'Failed to fetch board');
+	}
+	return res.json();
+}
+
+export async function getBoardTasks(boardId: number): Promise<Task[]> {
+	const res = await fetch(`${API_BASE_URL}/boards/${boardId}/tasks`);
+	if (!res.ok) {
+		const err = await res.json().catch(() => ({ message: 'Unknown error' }));
+		throw new Error(err.message || 'Failed to fetch board tasks');
+	}
+	return res.json();
+}
+
 export async function deleteTask(taskId: number): Promise<void> {
 	const res = await fetch(`${API_BASE_URL}/task/${taskId}`, {
 		method: 'DELETE',

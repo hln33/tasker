@@ -97,3 +97,28 @@ func TestGetBoardHandler_GetBoardByID_NotFound(t *testing.T) {
 
 	assert.Equal(t, "board not found", response["error"])
 }
+
+func TestGetTasksByBoardHandler_EmptyTasks(t *testing.T) {
+	setupTest()
+	defer tearDownTest()
+
+	r := setupTestRouter()
+
+	// Create a board
+	boardBody := marshalBoardBody("Test Board", "Test Description", "#FF5733")
+	w1 := makePostBoardRequest(r, boardBody)
+
+	var createdBoard types.Board
+	json.Unmarshal(w1.Body.Bytes(), &createdBoard)
+
+	// Get tasks for the board (should be empty)
+	w2 := makeGetBoardTasksRequest(r, fmt.Sprintf("%d", createdBoard.ID))
+
+	assert.Equal(t, http.StatusOK, w2.Code)
+
+	var response []types.Task
+	err := json.Unmarshal(w2.Body.Bytes(), &response)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 0, len(response))
+}
