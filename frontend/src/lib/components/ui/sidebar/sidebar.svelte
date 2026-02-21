@@ -5,19 +5,19 @@
 	import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
 	import { useSidebar } from "./context.svelte.js";
 
-	let {
-		ref = $bindable(null),
-		side = "left",
-		variant = "sidebar",
-		collapsible = "offcanvas",
-		class: className,
-		children,
-		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
-		side?: "left" | "right";
-		variant?: "sidebar" | "floating" | "inset";
-		collapsible?: "offcanvas" | "icon" | "none";
-	} = $props();
+  let {
+    ref = $bindable(null),
+    side = "left",
+    variant = "sidebar",
+    collapsible = "offcanvas",
+    class: className,
+    children,
+    ...restProps
+  }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+    side?: "left" | "right";
+    variant?: "sidebar" | "floating" | "inset";
+    collapsible?: "offcanvas" | "icon" | "none";
+  } = $props();
 
 	const sidebar = useSidebar();
 </script>
