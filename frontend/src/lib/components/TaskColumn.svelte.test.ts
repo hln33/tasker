@@ -10,14 +10,16 @@ describe('TaskColumn', () => {
 			title: 'Buy groceries',
 			description: 'Get milk, eggs, and bread',
 			status: 'TODO',
-			priority: 'high'
+			priority: 'High',
+			board_id: 1
 		},
 		{
 			id: 2,
 			title: 'Call dentist',
 			description: 'Schedule annual checkup',
 			status: 'TODO',
-			priority: 'medium'
+			priority: 'Medium',
+			board_id: 1
 		}
 	];
 	const inProgressTasks: Task[] = [
@@ -26,7 +28,8 @@ describe('TaskColumn', () => {
 			title: 'Write report',
 			description: 'Complete Q4 financial analysis',
 			status: 'In Progress',
-			priority: 'low'
+			priority: 'Low',
+			board_id: 1
 		}
 	];
 

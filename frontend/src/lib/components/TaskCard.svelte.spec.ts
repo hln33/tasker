@@ -10,7 +10,8 @@ describe('TaskCard.svelte', () => {
 		title: 'Test Task Title',
 		description: 'This is a test task description',
 		status: 'TODO',
-		priority: 'High'
+		priority: 'High',
+		board_id: 1
 	};
 
 	const onDelete = () => {};

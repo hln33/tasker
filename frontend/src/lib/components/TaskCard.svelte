@@ -42,13 +42,11 @@
 	<div class="border-b border-gray-200 p-0">
 		<div class="flex flex-col">
 			<div class="flex w-full items-center">
-				{#if task.priority !== ''}
-					<span
-						class="flex justify-start rounded-full px-3 py-1 text-sm font-medium {getPriorityColor(task.priority)}"
-					>
-						{task.priority}
-					</span>
-				{/if}
+				<span
+					class="flex justify-start rounded-full px-3 py-1 text-sm font-medium {getPriorityColor(task.priority)}"
+				>
+					{task.priority}
+				</span>
 
 				<div class="ml-auto">
 					<button

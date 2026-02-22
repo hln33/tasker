@@ -10,7 +10,8 @@ describe('DeleteTaskModal.svelte', () => {
 		title: 'Test Task to Delete',
 		description: 'This is a test task',
 		status: 'TODO',
-		priority: 'Medium'
+		priority: 'Medium',
+		board_id: 1
 	};
 
 	it('should render modal when open prop is true', async () => {

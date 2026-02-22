@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import * as api from '$lib/api';
+import { createBoardSchema } from '$lib/schemas';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -15,33 +16,29 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 	createBoard: async ({ request }) => {
 		const formData = await request.formData();
-		const name = formData.get('name');
-		const description = formData.get('description') || '';
-		const color = formData.get('color') || '#3B82F6';
+		const rawData = Object.fromEntries(formData);
 
-		if (!name || typeof name !== 'string' || !name.trim()) {
+		// Validate with Zod
+		const result = createBoardSchema.safeParse(rawData);
+		if (!result.success) {
+			const firstError = result.error.issues[0].message;
 			return fail(400, {
-				error: 'Board name is required',
-				name: name?.toString() || '',
-				description: description.toString(),
-				color: color.toString()
+				error: firstError,
+				name: rawData.name?.toString() || '',
+				description: rawData.description?.toString() || '',
+				color: rawData.color?.toString() || '#3B82F6'
 			});
 		}
 
 		try {
-			const board = await api.createBoard({
-				name: name.trim(),
-				description: description.toString(),
-				color: color.toString()
-			});
-
+			const board = await api.createBoard(result.data);
 			return { success: true, board };
 		} catch (e) {
 			return fail(500, {
 				error: e instanceof Error ? e.message : 'Failed to create board',
-				name: name.toString(),
-				description: description.toString(),
-				color: color.toString()
+				name: rawData.name?.toString() || '',
+				description: rawData.description?.toString() || '',
+				color: rawData.color?.toString() || '#3B82F6'
 			});
 		}
 	}
