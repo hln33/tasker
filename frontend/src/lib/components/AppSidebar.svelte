@@ -1,13 +1,14 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import LayoutDashboard from 'lucide-svelte/icons/layout-dashboard';
 	import { page } from '$app/state';
+	import AllBoards from '$lib/icons/AllBoards.svelte';
+	import AllTasks from '$lib/icons/AllTasks.svelte';
 
 	const currentPath = $derived(page.url.pathname);
 
 	const navItems = [
-		{ title: 'All Tasks', url: '/', icon: LayoutDashboard },
-		{ title: 'Boards', url: '/boards', icon: LayoutDashboard }
+		{ title: 'All Tasks', url: '/', icon: AllTasks },
+		{ title: 'Boards', url: '/boards', icon: AllBoards }
 		// { title: 'Calendar', url: '/calendar', icon: Calendar },
 		// { title: 'Projects', url: '/projects', icon: Folder },
 		// { title: 'Settings', url: '/settings', icon: Settings },

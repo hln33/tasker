@@ -48,7 +48,6 @@
 		"vitest-browser-svelte": "^2.0.2"
 	},
 	"dependencies": {
-		"lucide-svelte": "^0.564.0",
 		"svelte-dnd-action": "^0.9.69",
 		"zod": "^4.3.6"
 	}
