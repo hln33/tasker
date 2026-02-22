@@ -1,18 +1,21 @@
+type TaskStatus = 'TODO' | 'In Progress' | 'Done';
+type TaskPriority = 'Low' | 'Medium' | 'High';
+
 export interface Task {
 	id: number;
 	title: string;
 	description: string;
-	status: string;
-	priority: string;
+	status: TaskStatus;
+	priority: TaskPriority;
 	board_id: number;
 }
 
 export interface CreateTaskInput {
 	title: string;
 	description?: string;
-	status?: string;
-	priority?: string;
-	board_id?: number;
+	status?: TaskStatus;
+	priority?: TaskPriority;
+	board_id: number;
 }
 
 export interface Board {
