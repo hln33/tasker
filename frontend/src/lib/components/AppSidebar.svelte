@@ -6,7 +6,7 @@
 	const currentPath = $derived(page.url.pathname);
 
 	const navItems = [
-		{ title: 'Task Board', url: '/', icon: LayoutDashboard },
+		{ title: 'All Tasks', url: '/', icon: LayoutDashboard },
 		{ title: 'Boards', url: '/boards', icon: LayoutDashboard }
 		// { title: 'Calendar', url: '/calendar', icon: Calendar },
 		// { title: 'Projects', url: '/projects', icon: Folder },

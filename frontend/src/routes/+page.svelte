@@ -1,4 +1,6 @@
 <script lang="ts">
+  // This file will be majorly refactored in the future to be a landing page or dashboard. The default board should be deprecated.
+  
 	import type { PageProps } from './$types';
 	import type { Task } from '$lib/types';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
